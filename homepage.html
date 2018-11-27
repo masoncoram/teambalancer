@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
+	<meta charset="utf-8"/>
 	<style>
 .scrollable ul {
 	overflow:hidden;
@@ -21,7 +23,7 @@ ul {
   list-style: none;
 }
 
-#balancing ul li {
+#listing ul li {
     margin-bottom:10px;
     padding-left:10px;
     border: 1px solid #aaa;
@@ -51,26 +53,34 @@ ul {
 
 	</style>
 
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+	</script>
 	<script>
-		function setSwapToBalancingListener() {
-			$("#balancing").style.display = "block";
-			$("#balanced").style.display = "none";
-			$("#balance_btn").click(setSwapToBalancedListener);
+		function swapPlayerView()
+		{
+			text = $("#balance_btn").text()
+			console.log ("show listing " + text);
+			if(text == 'Back') {
+				$("#listing").show();
+				$("#balanced").hide();
+				$("#balance_btn").html('Balance!');
+			} else {
+				$("#listing").hide();
+				$("#balanced").show();
+				$("#balance_btn").html('Back');
+			}
 		}
-
-		function setSwapToBalancedListener() {
-			$("#balancing").style.display = "none";
-			$("#balanced").style.display = "block";
-			$("#balance_btn").click(setSwapToBalancingListener);
-		}
-
 
 		$( document ).ready(function() {
-			$("#balance_btn").click(setSwapToBalancedListener);
-
-		}
-
+			console.log("ready function executed");
+			$("#listing").show();
+			$("#balanced").hide();
+			var btn = $("#balance_btn");
+			btn.click(swapPlayerView);
+			btn.html('Balance!')
+		}); 
 	</script>
+
 </head>
 
 <header>
@@ -82,7 +92,7 @@ ul {
 	</div>
 	<div class="container" style="position:absolute; min-width:60%;">
 		<div class="jumbotron">
-			<div id="balancing" class="scrollable" style="display:none">
+			<div id="listing" class="scrollable">
 				<ul>
 					<li>Benjamin Davis</li>
 					<li>US Economy</li>
@@ -94,8 +104,8 @@ ul {
 				</ul>
 			</div>
 
-			<p> Balanced teams:</p>
-			<div id="balanced" style="display:block">
+			<div id="balanced">
+				<p> Balanced teams:</p>
 				<div class="flex-container">
 					<ul style="width:50%; ">
 						<li>Benjamin Davis</li>
@@ -113,7 +123,7 @@ ul {
 			</div>
 
 		</div>
-		<button id="balance_btn" type="button" class="btn btn-success ">Balance!</button>
+		<button id="balance_btn" type="button" class="btn btn-success">NO_JAVASCRIPT</button>
 	</div>
 	<div id="friends" class="right scrollable">
 		<ul>
