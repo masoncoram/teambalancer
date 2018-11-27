@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+.scrollable ul {
+	overflow:hidden;
+	overflow-y:scroll;
+	min-height:70%;
+	min-width:60%;
+}
+
+.right {
+    position: absolute;
+    right: 0px;
+    width: 300px;
+    border: 3px solid #73AD21;
+    padding: 10px;
+}
+
+ul {
+  list-style: none;
+}
+
+#balancing ul li {
+    margin-bottom:10px;
+    padding-left:10px;
+    border: 1px solid #aaa;
+}
+
+#friends ul li {
+    margin-bottom:10px;
+    padding-left:10px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+}
+
+#friends ul li:hover {
+	border-color: #777;
+	background: #eeeeee;
+}
+
+#friends ul li:active {
+  background: #eee;
+  box-shadow: inset 0 1px 1px #666;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+}
+
+	</style>
+
+	<script>
+		function setSwapToBalancingListener() {
+			$("#balancing").style.display = "block";
+			$("#balanced").style.display = "none";
+			$("#balance_btn").click(setSwapToBalancedListener);
+		}
+
+		function setSwapToBalancedListener() {
+			$("#balancing").style.display = "none";
+			$("#balanced").style.display = "block";
+			$("#balance_btn").click(setSwapToBalancingListener);
+		}
+
+
+		$( document ).ready(function() {
+			$("#balance_btn").click(setSwapToBalancedListener);
+
+		}
+
+	</script>
+</head>
+
+<header>
+	<h1>LoL Balance</h1>
+</header>
+<body>
+	<div class="flex-container">
+
+	</div>
+	<div class="container" style="position:absolute; min-width:60%;">
+		<div class="jumbotron">
+			<div id="balancing" class="scrollable" style="display:none">
+				<ul>
+					<li>Benjamin Davis</li>
+					<li>US Economy</li>
+					<li>Harry Potter</li>
+					<li>Faker</li>
+					<li>Bjergsen</li>
+					<li>phoenixteam</li>
+					<li>Trident</li>
+				</ul>
+			</div>
+
+			<p> Balanced teams:</p>
+			<div id="balanced" style="display:block">
+				<div class="flex-container">
+					<ul style="width:50%; ">
+						<li>Benjamin Davis</li>
+						<li>US Economy</li>
+						<li>Harry Potter</li>
+						<li>Faker</li>
+					</ul>
+					<ul style="width:50%;">
+						<li>ddog</li>
+						<li>Bjergsen</li>
+						<li>phoenixteam</li>
+						<li>Trident</li>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+		<button id="balance_btn" type="button" class="btn btn-success ">Balance!</button>
+	</div>
+	<div id="friends" class="right scrollable">
+		<ul>
+			<li>Benjamin Davis</li>
+			<li>US Economy</li>
+			<li>Harry Potter</li>
+			<li>Faker</li>
+			<li>Bjergsen</li>
+			<li>phoenixteam</li>
+			<li>Trident</li>
+		</ul>
+	</div>
+
+</body>
+</html>
+
