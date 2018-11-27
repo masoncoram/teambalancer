@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+
+	<link rel="stylesheet" href="tweetstyle.css">
+	<script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+	</script>
+	<script> 
+	var config = {
+		//apiKey: "AIzaSyBDgHk3_m-vqyUbTGIqgCZ8qAb-CoY5ID4",
+		authDomain: "luminous-torch-6850.firebaseapp.com",
+		databaseURL: "https://luminous-torch-6850.firebaseio.com",
+		storageBucket: "bucket.appspot.com"
+	};
+	
+    firebase.initializeApp(config);
+	// https://firebase.google.com/docs/reference/js/firebase.database.Reference
+	var chattyref = firebase.database().ref('chatty/'); 
+	
+	// from 
+	// http://stackoverflow.com/questions/4878756/javascript-how-to-capitalize-first-letter-of-each-word-like-a-2-word-city
+	function capitalizeFirst(str)
+	{
+		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+	}
+	function addtweet (message, sender) 
+	{
+		console.log ("writing"); 
+		// https://firebase.google.com/docs/reference/js/firebase.database.Reference#push
+		var newTweetRef = chattyref.push(); 
+		newTweetRef.set ({
+			'message': message, 
+			'sender': sender}); 
+		console.log ("written"); 
+	}
+
+	function deleteTweet (key)
+	{
+		console.log ("deleting... ")
+		var tweetref = firebase.database().ref('chatty/'+key+'/'); 
+		tweetref.remove();
+		console.log ("delted"); 
+	}
+
+	// see
+	// https://firebase.google.com/docs/database/web/retrieve-data
+	function startTweetListener () 
+	{ 
+		chattyref.on('child_added', function (tweet) { 
+				var message = tweet.val().message; 
+				var sender = tweet.val().sender; 
+				var key = tweet.key;
+				console.log (key+ " message:"+ message+"sender:"+sender); 
+				var senderEscaped = '\''+sender+'\''; 
+				var topSenderEscaped = '\'top'+sender+'\''; 
+				$("#tweetlist").prepend('<div class=\"tweet\" id=\''+key
+						+'\'><div class=\'message\'>'
+						+message  
+						+ '</div><div class=\'sender\' id='+senderEscaped+'>from '
+						+ tweet.val().sender
+						+'</div>'
+						+'<button id=\''+key+'btn\'>Delete</button>'
+						+ '</div>'); 
+				$('#'+key+'btn').click (function() { 
+					console.log ("clicked "+key); 
+					deleteTweet (key); 
+				}); 
+		}); 
+	}
+  	
+	function startTweetDeleteListener () { 
+		chattyref.on('child_removed', function (tweet) { 
+			var message = tweet.val().message; 
+			var keyToRemove = tweet.key; 
+			console.log ("remove: "+keyToRemove); 
+			console.log ("removed "+message); 
+			$("div").each (function(i) { 
+				console.log ("id ",this.id); 
+				if (this.id == keyToRemove)
+				{ 
+					console.log ("delete this one from the screen"); 
+					// see https://api.jquery.com/remove/ 
+					this.remove(); 
+				}
+			}); 
+		}); 
+	}
+	
+	var composing = false; 
+	
+	$( document ).ready(function() {
+		$("#input").hide(); 
+		console.log ('database: '+firebase.database.app); 
+		startTweetListener ();   
+		startTweetDeleteListener (); 
+		$(".sender").click (function() { 
+			console.log ("clicked a sender"); 
+		}); 
+		$("#newMessage").click (function () { 
+			if (!composing) { 
+			    // see https://www.w3schools.com/jquery/jquery_hide_show.asp
+				$("#input").show(100);
+				$("#newMessage").html('send'); 
+				composing = true; 
+			} else 
+			{ 
+				composing=false; 
+				$("#input").hide(100); 
+				$("#newMessage").html('write'); 
+				var newMessage = $("#newmessage").val(); 
+				var sender = $("#username").val(); 
+				console.log ("sending "+newMessage + " from "+ sender); 
+				addtweet (newMessage, sender); 
+			}
+		}); 
+	}); 
+	</script>
+	
+	</head>
+	<body>
+		<h1>Chatty:  the twitter clone</h1>
+		<div class="inputFields">
+			<button id="newMessage">write</button>
+			<div id="input">
+				Message: <br>
+				<input type="text" id="newmessage"> <br>
+				Name: <br>
+				<input type="text" id="username" value=""> <br>
+			</div>
+		</div>
+		<div id="tweetlist"></div>
+	</body>
+</html>
