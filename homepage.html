@@ -51,6 +51,9 @@ ul {
   flex-direction: row;
 }
 
+.card-img-right {
+	flex-direction: row;
+}
 	</style>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
@@ -58,7 +61,7 @@ ul {
 	<script>
 		function swapPlayerView()
 		{
-			text = $("#balance_btn").text()
+			text = $("#balance_btn").text();
 			console.log ("show listing " + text);
 			if(text == 'Back') {
 				$("#listing").show();
@@ -77,8 +80,30 @@ ul {
 			$("#balanced").hide();
 			var btn = $("#balance_btn");
 			btn.click(swapPlayerView);
-			btn.html('Balance!')
+			btn.html('Balance!');
+
+			var names = $.map($(".card-title"), function(n) {
+				return n.innerText});
+			console.log("names: " + names);
+			$.each($(".friend-card"), function(i, card) {
+				name = names[i]
+				console.log("card " + card + " name " + name);
+				card.click(function() {
+					addPlayerToList(name)
+				}); 
+			}); 
+
 		}); 
+
+		// appends html list item to listing element
+		function addPlayerToList(PlayerName)
+		{
+			var node = document.createElement("LI");             // Create a <li> node
+			var textnode = document.createTextNode(PlayerName);  // Create a text node
+			node.appendChild(textnode);                          // Append the text to <li>
+			document.getElementById("listing").appendChild(node);// Append <li> to <ul> with id="myList"
+		}
+
 	</script>
 
 </head>
@@ -107,13 +132,13 @@ ul {
 			<div id="balanced">
 				<p> Balanced teams:</p>
 				<div class="flex-container">
-					<ul style="width:50%; ">
+					<ul id="team1" style="width:50%; ">
 						<li>Benjamin Davis</li>
 						<li>US Economy</li>
 						<li>Harry Potter</li>
 						<li>Faker</li>
 					</ul>
-					<ul style="width:50%;">
+					<ul id="team2" style="width:50%;">
 						<li>ddog</li>
 						<li>Bjergsen</li>
 						<li>phoenixteam</li>
@@ -126,14 +151,84 @@ ul {
 		<button id="balance_btn" type="button" class="btn btn-success">NO_JAVASCRIPT</button>
 	</div>
 	<div id="friends" class="right scrollable">
-		<ul>
-			<li>Benjamin Davis</li>
-			<li>US Economy</li>
-			<li>Harry Potter</li>
-			<li>Faker</li>
-			<li>Bjergsen</li>
-			<li>phoenixteam</li>
-			<li>Trident</li>
+		<ul id="frends_list">
+			<li>
+				<div class="flex-container friend-card"> <!--style="width: 18rem;"-->
+					<div class="card-body">
+						<h5 class="card-title">Benjamin Davis</h5>
+						<p class="card-text">
+						card's content.
+						</p>
+					</div>
+					<img class="card-img-right" src="images/bronze.png" alt="Card image cap">
+				</div>
+			</li>
+			<li>
+				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
+					<div class="card-body">
+						<h5 class="card-title">US Economy</h5>
+						<p class="card-text">
+						card's content.
+						</p>
+					</div>
+					<img class="card-img-right" src="images/diamond.png" alt="Card image cap">
+				</div>
+			</li>
+			<li>
+				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
+					<div class="card-body">
+						<h5 class="card-title">Harry Potter</h5>
+						<p class="card-text">
+						card's content.
+						</p>
+					</div>
+					<img class="card-img-right" src="images/master.png" alt="Card image cap">
+				</div>
+			</li>
+			<li>
+				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
+					<div class="card-body">
+						<h5 class="card-title">Faker</h5>
+						<p class="card-text">
+						card's content.
+						</p>
+					</div>
+					<img class="card-img-right" src="images/silver.png" alt="Card image cap">
+				</div>
+			</li>
+			<li>
+				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
+					<div class="card-body">
+						<h5 class="card-title">Bjergsen</h5>
+						<p class="card-text">
+						card's content.
+						</p>
+					</div>
+					<img class="card-img-right" src="images/challenger.png" alt="Card image cap">
+				</div>
+			</li>
+			<li>
+				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
+					<div class="card-body">
+						<h5 class="card-title">phoenixteam</h5>
+						<p class="card-text">
+						card's content.
+						</p>
+					</div>
+					<img class="card-img-right" src="images/gold.png" alt="Card image cap">
+				</div>
+			</li>
+			<li>
+				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
+					<div class="card-body">
+						<h5 class="card-title">Trident</h5>
+						<p class="card-text">
+						card's content.
+						</p>
+					</div>
+					<img class="card-img-right" src="images/platinum.png" alt="Card image cap">
+				</div>
+			</li>
 		</ul>
 	</div>
 
