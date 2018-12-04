@@ -7,16 +7,20 @@
 .scrollable ul {
 	overflow:hidden;
 	overflow-y:scroll;
-	min-height:70%;
+	min-height:90vh;
+	max-height:90vh;
 	min-width:60%;
 }
 
+.balance {
+	height:60vh;
+}
+
 .right {
-    position: absolute;
-    right: 0px;
-    width: 300px;
-    border: 3px solid #73AD21;
-    padding: 10px;
+    position: fixed;
+	 top: 0px;
+	 right: 0px;
+    width: 260px;
 }
 
 ul {
@@ -27,6 +31,12 @@ ul {
     margin-bottom:10px;
     padding-left:10px;
     border: 1px solid #aaa;
+}
+
+#friends_list {
+    border: 3px solid #73AD21;
+    padding: 10px;
+	 margin: 0px;
 }
 
 #friends ul li {
@@ -51,14 +61,38 @@ ul {
   flex-direction: row;
 }
 
+#friends input {
+    float: right;
+    padding: 6px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-right: 16px;
+    font-size: 12px;
+}
+
+/* When the screen is less than 600px wide, stack the links and the search field vertically instead of horizontally */
+@media screen and (max-width: 600px) {
+    input[type=search] {
+        float: none;
+        display: block;
+        text-align: left;
+        width: 100%;
+        padding: 14px;
+    }
+    .topnav input[type=text] {
+        border: 1px solid #ccc;
+    }
+}
+
 .card-img-right {
-	flex-direction: row;
+	width: 40%;
 }
 	</style>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
 	</script>
 	<script>
+
 		function swapPlayerView()
 		{
 			text = $("#balance_btn").text();
@@ -76,6 +110,8 @@ ul {
 
 		$( document ).ready(function() {
 			console.log("ready function executed");
+			friends = [ "Benjamin Davis", "US Economy", "Harry Potter", "Faker", "ddog",
+				"Bjergsen", "phoenixteam", "Trident" ];
 			$("#listing").show();
 			$("#balanced").hide();
 			var btn = $("#balance_btn");
@@ -85,11 +121,11 @@ ul {
 			var names = $.map($(".card-title"), function(n) {
 				return n.innerText});
 			console.log("names: " + names);
-			$.each($(".friend-card"), function(i, card) {
-				name = names[i]
-				console.log("card " + card + " name " + name);
-				card.click(function() {
-					addPlayerToList(name)
+			$(".friend-card").each(function(index) {
+				var name = names[index]
+				console.log("card " + $(this) + " name " + name);
+				$( this ).click(function() {
+					console.log("call to add name to list");
 				}); 
 			}); 
 
@@ -98,10 +134,27 @@ ul {
 		// appends html list item to listing element
 		function addPlayerToList(PlayerName)
 		{
+			console.log("adding " + PlayerName);
 			var node = document.createElement("LI");             // Create a <li> node
 			var textnode = document.createTextNode(PlayerName);  // Create a text node
 			node.appendChild(textnode);                          // Append the text to <li>
 			document.getElementById("listing").appendChild(node);// Append <li> to <ul> with id="myList"
+		}
+
+		function addFrendToFrendList(Friend)
+		{
+			console.log("adding " + Friend);
+			var node = document.createElement("LI");             // Create a <li> node
+			var card = document.createElement("DEV");			  // Create a dev
+			var body = document.createElement("DEV");
+			var title = document.createElement("H5");
+			var textnode = document.createTextNode(PlayerName);  // Create a text node
+			node.appendChild(textnode);                          // Append the text to <li>
+			document.getElementById("listing").appendChild(node);// Append <li> to <ul> with id="myList"
+		}
+
+		function logSearch() {
+			$("#
 		}
 
 	</script>
@@ -117,7 +170,8 @@ ul {
 	</div>
 	<div class="container" style="position:absolute; min-width:60%;">
 		<div class="jumbotron">
-			<div id="listing" class="scrollable">
+			<div id="listing" class="balance" style="">
+				<p> Selected players:</p>
 				<ul>
 					<li>Benjamin Davis</li>
 					<li>US Economy</li>
@@ -129,7 +183,7 @@ ul {
 				</ul>
 			</div>
 
-			<div id="balanced">
+			<div id="balanced" class="balance">
 				<p> Balanced teams:</p>
 				<div class="flex-container">
 					<ul id="team1" style="width:50%; ">
@@ -151,7 +205,13 @@ ul {
 		<button id="balance_btn" type="button" class="btn btn-success">NO_JAVASCRIPT</button>
 	</div>
 	<div id="friends" class="right scrollable">
-		<ul id="frends_list">
+		<div class="search-container">
+			<form name="search" onSubmit="return logSearch()">
+				<input id=search_input type="text" placeholder="Search.." name="search">
+				<button type="submit"><i class="fa fa-search"></i></button>
+			</form>
+		</div>
+		<ul id="friends_list">
 			<li>
 				<div class="flex-container friend-card"> <!--style="width: 18rem;"-->
 					<div class="card-body">
