@@ -287,26 +287,32 @@ h1 {
 
 		$( document ).ready(function() {
 			console.log("ready function executed");
+			
+			function display_friends(list) {
+				$("#friends-list").empty();
+				list.forEach(function(element) {
+					var name = element.name;
+					var rank_str = element.tear + ' ' + element.dev;
+					var rank_img_src = getSrcByRank(element.tear);
+					appendFrend(name, rank_str, rank_img_src);
+				}); 
+			}
+
 			friends = [
 						{name:'Benjamin Davis', tear:'bronze', dev:2},
-						{name:'US Economy', tear:'diamond', dev:1},
-						{name:'Faker', tear:'silver', dev:5},
-						{name:'Trident', tear:'platinum', dev:2},
 						{name:'Bjergsen', tear:'challenger', dev:1},
-						{name:'phoenixteam', tear:'gold', dev:5},
-						{name:'Harry Potter', tear:'master', dev:1} ];
+						{name:'Faker', tear:'silver', dev:5},
+						{name:'Harry Potter', tear:'master', dev:1},
+						{name:'Trident', tear:'platinum', dev:2},
+						{name:'US Economy', tear:'diamond', dev:1},
+						{name:'phoenixteam', tear:'gold', dev:5} ];
 			$("#listing").show();
 			$("#balanced").hide();
 
 			configure_balance_button();
+			display_friends(friends)
 
 			console.log("names: " + friends);
-			friends.forEach(function(element) {
-				var name = element.name;
-				var rank_str = element.tear + element.dev;
-				var rank_img_src = getSrcByRank(element.tear);
-				appendFrend(name, rank_str, rank_img_src);
-			}); 
 
 		}); 
 
@@ -350,17 +356,51 @@ h1 {
 					var image = document.createElement("IMG");
 					image.className = 'card-img-right'
 					image.src = rank_img_src;
+
+					var span = document.createElement("SPAN");
+					span.className = 'close';
+					span.title='Remove Card'
+					if (span.addEventListener) {
+						span.addEventListener("click", function() {
+							console.log("removing " + name + " from list");
+							document.getElementById("friends-list").removeChild(item);
+						});
+					} else if (span.attachEvent) {
+						span.attachEvent("click", function() {
+							console.log("removing " + name + " from list");
+							document.getElementById("friends-list").removeChild(item);
+						});
+					} else {
+						console.log("X butten event not added");
+					}
+					{
+						var textnode = document.createTextNode("×")
+						span.appendChild(textnode);
+					}
+
 					card.appendChild(body);
 					card.appendChild(image);
+					card.appendChild(span);
+					if (card.addEventListener) {
+						card.addEventListener("click", function(e) {
+							if (e.target.tagName.toLowerCase() == 'span') return;
+							console.log(e.target +"call to add " + name + " to list");
+						}); 
+					} else if (card.attachEvent) {
+						card.attachEvent("click", function(e) {
+							if (e.target.tagName.toLowerCase() == 'span') return;
+							console.log("call to add " + name + " to list");
+						}); 
+					} else {
+						console.log("card event added");
+					}
+
 				}
 				item.appendChild(card);
 			}
 
 			var list = document.getElementById("friends-list");
 			list.appendChild(item);
-			list.click(function() {
-				console.log("call to add name to list");
-			}); 
 		}
 
 		function configure_balance_button() {
