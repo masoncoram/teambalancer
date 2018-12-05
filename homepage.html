@@ -3,6 +3,9 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="/jquery-3.3.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<style>
 .scrollable ul {
 	overflow:hidden;
@@ -87,11 +90,117 @@ ul {
 .card-img-right {
 	width: 40%;
 }
+
+
+
+
+/* Modal STUFF */
+/* Center the image and position the close button */
+.imgcontainer {
+    text-align: center;
+    margin: 24px 0 12px 0;
+    position: relative;
+}
+.avatar {
+    width: 200px;
+        height:200px;
+    border-radius: 50%;
+}
+
+/* The Modal (background) */
+.modal {
+        display:none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+/* Modal Content Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 4% auto 15% auto;
+    border: 1px solid #888;
+    width: 50%;
+    padding-left: 15px;
+    padding-right:15px;
+        padding-bottom: 30px;
+}
+
+/* The Close Button (x) */
+.close {
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+}
+.close:hover,.close:focus {
+    color: red;
+    cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+    animation: zoom 0.6s
+}
+@keyframes zoom {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+}
+
+.animate-grow {
+    animation-name: grow;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+}
+@keyframes grow {
+    0%    {transform: scale(1);}
+    15%   {transform: scale(1.09);}
+    40%   {transform: scale(1);}
+}
+
+.block {
+    text-align: center;
+
+}
+.equalspace {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item-name {
+    font-size: 1.3em;
+}
+.addtocart {
+    font-size: 1.3em;
+}
+
+
+
+
+
+
 	</style>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
 	</script>
 	<script>
+
+		function addPlayers() {
+            
+            //var popuptable = document.getElementById('checkout-table');
+			//popuptable.innerHTML = data;
+
+            document.getElementById('modal-wrapper').style.display='block';
+
+		}
+
 
 		function swapPlayerView()
 		{
@@ -154,7 +263,12 @@ ul {
 		}
 
 		function logSearch() {
-			$("#
+			console.log("searching ");
+		}
+
+		function findSummoner() {
+			console.log("starting API call.. ");
+			
 		}
 
 	</script>
@@ -165,6 +279,39 @@ ul {
 	<h1>LoL Balance</h1>
 </header>
 <body>
+
+  
+  <div id="modal-wrapper" class="modal" style="display:none;" >
+
+
+    <form class="modal-content animate" action="/cart/">
+
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
+      	  <img src="images/add_friend-512.png" alt="Avatar" class="avatar">
+          <h1 style="text-align:center">Type Summoner name or copy-paste lobby chat:</h1>
+      </div>
+	
+    <!--	
+	<?php
+    showCart();
+    ?>
+	-->
+	
+
+      <div class="equalspace">
+        <div></div>
+        <button onclick="findSummoner()" type="button" class="btn btn-info"><font size="6">Add Summoner</font></button>
+        <!-- <button type="submit" class="btn btn-success"><font size="6">Checkout</font></button> -->
+		<div></div>
+      </div>
+
+    </form>
+
+  </div>
+
+  
+
 	<div class="flex-container">
 
 	</div>
@@ -206,9 +353,10 @@ ul {
 	</div>
 	<div id="friends" class="right scrollable">
 		<div class="search-container">
+			<input type="image" src="images/add_friend-512.png" onclick="addPlayers()" style="max-width:52px; max-height:52px;">
 			<form name="search" onSubmit="return logSearch()">
+				<input type="submit"><i class="fa fa-search"></i></button>
 				<input id=search_input type="text" placeholder="Search.." name="search">
-				<button type="submit"><i class="fa fa-search"></i></button>
 			</form>
 		</div>
 		<ul id="friends_list">
