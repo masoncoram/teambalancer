@@ -256,48 +256,11 @@ h1 {
 		}
 
 		function getSrcByRank(rank) {
-			var rank_img_src = '/images/'
-			switch(rank) {
-				case 'bronze':
-					rank_img_src += 'bronze.png';
-					break;
-				case 'silver':
-					rank_img_src += 'silver.png';
-					break;
-				case 'gold':
-					rank_img_src += 'gold.png';
-					break;
-				case 'diamond':
-					rank_img_src += 'diamond.png';
-					break;
-				case 'platinum':
-					rank_img_src += 'platinum.png';
-					break;
-				case 'challenger':
-					rank_img_src += 'challenger.png';
-					break;
-				case 'master':
-					rank_img_src += 'master.png';
-					break;
-				default:
-					rank_img_src += 'default.png';
-			}
-			return rank_img_src;
+			return '/images/' + rank + '.png';
 		}
 
 		$( document ).ready(function() {
 			console.log("ready function executed");
-			
-			function display_friends(list) {
-				$("#friends-list").empty();
-				list.forEach(function(element) {
-					var name = element.name;
-					var rank_str = element.tear + ' ' + element.dev;
-					var rank_img_src = getSrcByRank(element.tear);
-					appendFrend(name, rank_str, rank_img_src);
-				}); 
-			}
-
 			friends = [
 						{name:'Benjamin Davis', tear:'bronze', dev:2},
 						{name:'Bjergsen', tear:'challenger', dev:1},
@@ -306,11 +269,23 @@ h1 {
 						{name:'Trident', tear:'platinum', dev:2},
 						{name:'US Economy', tear:'diamond', dev:1},
 						{name:'phoenixteam', tear:'gold', dev:5} ];
+			
+			function display_friends() {
+				$("#friends-list").empty();
+				friends.forEach(function(element) {
+					var name = element.name;
+					var rank_str = element.tear + element.dev;
+					var rank_img_src = getSrcByRank(element.tear);
+					appendFrend(name, rank_str, rank_img_src);
+				}); 
+
+			}
+
 			$("#listing").show();
 			$("#balanced").hide();
 
 			configure_balance_button();
-			display_friends(friends)
+			display_friends(friends);
 
 			console.log("names: " + friends);
 
@@ -421,8 +396,10 @@ h1 {
 		
 		function apiSummoner() {
 			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
+			var summnerName = $("#name-box").val()
 			const proxyurl = "https://cors-anywhere.herokuapp.com/";
-			const url = "https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/US%20Economy?api_key=";
+			const url = encodeURI("https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/" + summnerName + "?api_key=");
+			console.log("fetching url:"+url)
 			$.getJSON(proxyurl + url + apikey, 
 			function(data) {
 				//data is the JSON string
@@ -475,7 +452,7 @@ h1 {
       	  <img src="images/add_friend-512.png" alt="Avatar" class="avatar">
           <h1 style="text-align:center">Type Summoner name or copy-paste lobby chat:</h1>
 		  <form action=""id="search" onSubmit="return apiSummoner()">
-		    <input type="text" placeholder="Summoner Name..." id="search-box">
+		    <input type="text" placeholder="Summoner Name..." id="name-box">
 			<div></div>
 			<input type="submit" class="btn btn-info" value="Add Summoner">
 			<!--<input type="submit" class="btn btn-info" value="Add Summoner"><font size="6">Add Summoner</font></input>-->
