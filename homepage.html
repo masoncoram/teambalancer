@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 
+<!--API KEY: RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a -->
+<!-- https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/US%20Economy?api_key=RGAPI-0690f2d7-d1ea-4258-8dfe-74c442446b4e -->
+<!-- https://na1.api.riotgames.com/lol/league/v3/positions/by-summoner/100311?api_key=RGAPI-0690f2d7-d1ea-4258-8dfe-74c442446b4e -->
+
 <html lang="en">
 <head>
 	<meta charset="utf-8"/>
@@ -154,7 +158,7 @@ ul {
     width: 50%;
     padding-left: 15px;
     padding-right:15px;
-        padding-bottom: 30px;
+    padding-bottom: 30px;
 }
 
 /* The Close Button (x) */
@@ -296,13 +300,49 @@ ul {
 			console.log("starting API call.. ");
 			
 		}
+		
+		function apiSummoner() {
+			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
+			const proxyurl = "https://cors-anywhere.herokuapp.com/";
+			const url = "https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/US%20Economy?api_key=";
+			$.getJSON(proxyurl + url + apikey, 
+			function(data) {
+				//data is the JSON string
+				var summID = data.id;
+				console.log("summonerID: " + summID);
+				const proxyurl2 = "https://cors-anywhere.herokuapp.com/";
+				const url2 = 'https://na1.api.riotgames.com/lol/league/v3/positions/by-summoner/' + summID + '?api_key=';
+				$.getJSON(proxyurl2 + url2 + apikey,
+				function(data2) {
+					//data2 is the JSON string
+					if (data2[0].queueType == "RANKED_SOLO_5x5") {
+						var tier = data2[0].tier;
+						var div = data2[0].rank;
+						console.log("Rank is " + tier + " " + div);
+					}
+					else if (data2[1].queueType == "RANKED_SOLO_5x5") {
+						var tier = data2[1].tier;
+						var div = data2[1].rank;
+						console.log("Rank is " + tier + " " + div);
+					}
+					else if (data2[2].queueType == "RANKED_SOLO_5x5") {
+						var tier = data2[2].tier;
+						var div = data2[2].rank;
+						console.log("Rank is " + tier + " " + div);
+					}
+					else {
+						console.log("Not Solo: " + data2[0].queueType);
+					}
+				});
+			});
+		}
 
 	</script>
 
 </head>
 
 <header>
-	<h1>LoL Balance</h1>
+	<h1 style="margin-left:2vw">LoL Balance</h1>
 </header>
 <body>
 
@@ -316,6 +356,13 @@ ul {
         <span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
       	  <img src="images/add_friend-512.png" alt="Avatar" class="avatar">
           <h1 style="text-align:center">Type Summoner name or copy-paste lobby chat:</h1>
+		  <form action=""id="search" onSubmit="return apiSummoner()">
+		    <input type="text" placeholder="Summoner Name..." id="search-box">
+			<div></div>
+			<input type="submit" class="btn btn-info" value="Add Summoner">
+			<!--<input type="submit" class="btn btn-info" value="Add Summoner"><font size="6">Add Summoner</font></input>-->
+			<button onclick="apiSummoner()" type="button" class="btn btn-info"><font size="6">Add Summoner</font></button>
+		  </form>
       </div>
 	
     <!--	
@@ -380,7 +427,7 @@ ul {
 	<div id="friends" class="right scrollable">
 		<div class="flex-container">
 			<form id="search" onSubmit="return logSearch()">
-				<input type="text" placeholder="Search.." id="search-box">
+				<input type="text" placeholder="Search..." id="search-box">
 				<button type="submit"><i class="fa fa-search"></i></button>
 			</form>
 			<input type="image" src="images/add_friend-512.png" onclick="addPlayers()" style="max-width:52px; max-height:52px;">
