@@ -259,49 +259,65 @@ h1 {
 			return '/images/' + rank + '.png';
 		}
 
+		function display_friends() {
+			$("#friends-list").empty();
+			// fliter friends by search
+			// sort friends by name/rank/what ever
+			friends.forEach(function(element, index) {
+				var name = element.name;
+				var rank_str = element.tear + element.dev;
+				var rank_img_src = getSrcByRank(element.tear);
+				appendFrend(index, name, rank_str, rank_img_src);
+			}); 
+
+		}
+
+		function addToFriendsList(inName, inTear, inDev) {
+			friends.push({playing:false, name:inName, tear:inTear, dev:inDev});
+		}
+		
+		function addPlayerToList(friendIndex)
+		{
+			num_players += 1;
+			console.log("adding player at i=" + friendIndex + ' ' + friends[friendIndex].name);
+			console.log("this is player number " + num_players); 
+			friends[friendIndex].playing = true;
+			appendPlayer(friends[friendIndex]);
+		}
+
+		var friends = []
+		var players = [];
+		var num_players = 0;
 		$( document ).ready(function() {
 			console.log("ready function executed");
 			friends = [
-						{name:'Benjamin Davis', tear:'bronze', dev:2},
-						{name:'Bjergsen', tear:'challenger', dev:1},
-						{name:'Faker', tear:'silver', dev:5},
-						{name:'Harry Potter', tear:'master', dev:1},
-						{name:'Trident', tear:'platinum', dev:2},
-						{name:'US Economy', tear:'diamond', dev:1},
-						{name:'phoenixteam', tear:'gold', dev:5} ];
+						{playing:false, name:'Benjamin Davis', tear:'bronze', dev:2},
+						{playing:false, name:'Bjergsen', tear:'challenger', dev:1},
+						{playing:false, name:'Faker', tear:'silver', dev:5},
+						{playing:false, name:'Harry Potter', tear:'master', dev:1},
+						{playing:false, name:'Trident', tear:'platinum', dev:2},
+						{playing:false, name:'US Economy', tear:'diamond', dev:1},
+						{playing:false, name:'phoenixteam', tear:'gold', dev:5}
+			];
+			players = [];
+			num_players = 0;
 			
-			function display_friends() {
-				$("#friends-list").empty();
-				friends.forEach(function(element) {
-					var name = element.name;
-					var rank_str = element.tear + element.dev;
-					var rank_img_src = getSrcByRank(element.tear);
-					appendFrend(name, rank_str, rank_img_src);
-				}); 
-
-			}
 
 			$("#listing").show();
 			$("#balanced").hide();
 
 			configure_balance_button();
 			display_friends(friends);
+		}); // end document.ready 
 
-			console.log("names: " + friends);
-
-		}); 
-
-		// appends html list item to listing element
-		function addPlayerToList(PlayerName)
-		{
-			console.log("adding " + PlayerName);
-			var node = document.createElement("LI");             // Create a <li> node
-			var textnode = document.createTextNode(PlayerName);  // Create a text node
-			node.appendChild(textnode);                          // Append the text to <li>
-			document.getElementById("listing").appendChild(node);// Append <li> to <ul> with id="myList"
+		function appendPlayer(player) {
+			var node = document.createElement("LI");
+			var textnode = document.createTextNode(player.name);
+			node.appendChild(textnode);
+			document.getElementById("waiting-list").appendChild(node);
 		}
-		
-		function appendFrend(name, rank_str, rank_img_src) {
+
+		function appendFrend(index, name, rank_str, rank_img_src) {
 			console.log("adding friend with name:" + name + " rank:" + rank_str );
 			var item = document.createElement("LI");             // Create a <li> item
 			{
@@ -358,13 +374,13 @@ h1 {
 					card.appendChild(span);
 					if (card.addEventListener) {
 						card.addEventListener("click", function(e) {
-							if (e.target.tagName.toLowerCase() == 'span') return;
-							console.log(e.target +"call to add " + name + " to list");
+							if (e.target.tagName.toLowerCase() == "span"){return;}
+							addPlayerToList(index);
 						}); 
 					} else if (card.attachEvent) {
 						card.attachEvent("click", function(e) {
-							if (e.target.tagName.toLowerCase() == 'span') return;
-							console.log("call to add " + name + " to list");
+							if (e.target.tagName.toLowerCase() == "span"){return;}
+							addPlayerToList(index);
 						}); 
 					} else {
 						console.log("card event added");
@@ -378,22 +394,8 @@ h1 {
 			list.appendChild(item);
 		}
 
-		function configure_balance_button() {
-			var btn = $("#balance_btn");
-			btn.click(swapPlayerView);
-			btn.html('Balance!');
-		}
 
 
-		function logSearch() {
-			console.log("searching ");
-		}
-
-		function findSummoner() {
-			console.log("starting API call.. ");
-			
-		}
-		
 		function apiSummoner() {
 			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
 			var summnerName = $("#name-box").val()
@@ -410,28 +412,49 @@ h1 {
 				$.getJSON(proxyurl2 + url2 + apikey,
 				function(data2) {
 					//data2 is the JSON string
-					if (data2[0].queueType == "RANKED_SOLO_5x5") {
-						var tier = data2[0].tier;
-						var div = data2[0].rank;
-						console.log("Rank is " + tier + " " + div);
-					}
-					else if (data2[1].queueType == "RANKED_SOLO_5x5") {
-						var tier = data2[1].tier;
-						var div = data2[1].rank;
-						console.log("Rank is " + tier + " " + div);
-					}
-					else if (data2[2].queueType == "RANKED_SOLO_5x5") {
-						var tier = data2[2].tier;
-						var div = data2[2].rank;
-						console.log("Rank is " + tier + " " + div);
-					}
-					else {
-						console.log("Not Solo: " + data2[0].queueType);
+					var ranked = false;
+					console.log("got data2:" + data2);
+					data2.forEach(function(queueType) {
+						if (queueType == "RANKED_SOLO_5x5") {
+							var tier = data2[0].tier;
+							var div = data2[0].rank;
+							ranked = true;
+							console.log("Rank is " + tier + " " + div);
+							addToFriendsList(summnerName, tier, div);
+							display_friends();
+						}
+					});
+					if (!ranked) {
+						var tier = "UNRANKED";
+						var div = 1;
+						console.log("Unranked in Solo");
+						addToFriendsList(summnerName, tier, div);
+						display_friends();
 					}
 				});
 			});
 		}
 
+		function configure_balance_button() {
+			var btn = $("#balance_btn");
+			btn.click(swapPlayerView);
+			btn.html('Balance!');
+		}
+
+
+		function logSearch() {
+			console.log("searching ");
+		}
+
+		function findSummoner() {
+			console.log("starting API call.. ");
+		}
+
+		function balanceTeams() {
+			activePlayers = friends.filter(friend => friend.playing);
+
+		}
+		
 	</script>
 
 </head>
@@ -487,14 +510,7 @@ h1 {
 		<div class="jumbotron">
 			<div id="listing" class="balance" style="">
 				<p> Selected players:</p>
-				<ul>
-					<li>Benjamin Davis</li>
-					<li>US Economy</li>
-					<li>Harry Potter</li>
-					<li>Faker</li>
-					<li>Bjergsen</li>
-					<li>phoenixteam</li>
-					<li>Trident</li>
+				<ul id="waiting-list">
 				</ul>
 			</div>
 
