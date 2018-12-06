@@ -49,7 +49,14 @@ ul {
 }
 
 h1 {
-	margin-top:10px;
+	margin-top:0px;
+}
+
+header {
+	background:#00849b;
+	margin:0px;
+	padding-top:10px;
+	padding-bottom:5px;
 }
 
 /********************** Styles for the Friends List **************************/
@@ -63,15 +70,20 @@ h1 {
 	display: flex;
 	flex-direction: row;
 	overflow: hidden;
-	padding: 6px;
+	padding-left: 4px;
+	padding-top: 12px;
 	margin-top: 8px;
-	margin-bottom: 8px;
+	margin-bottom: 6px;
 	margin-right: 16px;
 	font-size: 12px;
 }
 
 #search {
 	margin-top: 20px;
+}
+
+#search-box {
+	width:13vw;
 }
 
 /* scrolling list */
@@ -91,9 +103,14 @@ h1 {
 }
 
 #friends-list {
-    border: 3px solid #73AD21;
-    padding: 10px;
-	 margin: 0px;
+	border: 5px solid #00849b;
+	background: #333;
+	padding: 10px;
+	margin: 0px;
+}
+
+#friends {
+	background: #00849b;
 }
 
 #friends ul li {
@@ -247,8 +264,12 @@ h1 {
     font-size: 1.3em;
 }
 
-.add-frend-button {
-	background-color: blue;
+#add-frend-button {
+	max-width: 35px;
+	max-height: 35px;
+	margin-left: 20px;
+	width:55px;
+	height:35px;
 }
 
 	</style>
@@ -568,7 +589,7 @@ h1 {
 
 </head>
 
-<header>
+<header >
 	<h1 style="margin-left:2vw">LoL Balance</h1>
 </header>
 <body>
@@ -637,7 +658,8 @@ h1 {
 				onkeyup="this.onchange();" onpaste="this.onchange();"
 				oninput="this.onchange();" type="text" placeholder="Search..."/>
 			</form>
-			<input id="add-frend-button" type="image" src="images/add-friend-512.png" onclick="showPopup()"style="max-width:52px; max-height:52px;">
+			<input id="add-frend-button" type="image" src="images/add_friend-512.png"
+			onclick="showPopup()">
 		</div>
 		<ul id="friends-list">
 			<li>
