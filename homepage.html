@@ -45,16 +45,19 @@ ul {
 }
 
 #listing ul li {
-    margin-bottom:10px;
-    padding-left:10px;
-    border: 1px solid #aaa;
+	margin-bottom:10px;
+	padding-left:10px;
+	border: 1px solid #aaa;
 }
 
 .jumbotron {
-  margin-right: 27vw;
-  margin-left: 2vw;
-  padding-right: 2vw;
-  padding-left: 2vw;
+	margin-right: 27vw;
+	margin-left: 2vw;
+	padding-right: 2vw;
+	padding-left: 2vw;
+	padding-top: 20px;
+	height: 80vh;
+	overflow: scroll;
 }
 
 h1 {
@@ -66,6 +69,17 @@ header {
 	margin:0px;
 	padding-top:10px;
 	padding-bottom:5px;
+}
+
+
+/********************** Styles for the Balance Grid **************************/
+.balance-card {
+	background: #009cb7;
+	margin-bottom:10px;
+	margin-right: 2vw;
+	padding-left:10px;
+	border: 1px solid #aaa;
+	border-radius: 8px;
 }
 
 /********************** Styles for the Friends List **************************/
@@ -441,7 +455,6 @@ header {
 			document.getElementById("waiting-list").appendChild(node);
 		}
 
-
 		function appendFrend(index, name, rank_str, rank_img_src) {
 			var item = document.createElement("LI");             // Create a <li> item
 			if (friends[index].playing) {
@@ -584,6 +597,11 @@ header {
 			btn.click(swapPlayerView);
 			btn.html('Balance!');
 			btn.prop("disabled",true);
+
+			btn = $("#back_btn");
+			btn.click(swapPlayerView);
+			btn.html("Back");
+			btn.hide();
 		}
 
 
@@ -592,13 +610,56 @@ header {
 		}
 
 		function appendToTeam(teamName, player) {
-			console.log("name: " + player.name);
-			console.log("stringify: " + JSON.stringify(player));
-            var node = document.createElement("LI");
-            var textnode = document.createTextNode(player.name);
-            node.appendChild(textnode);
-            document.getElementById(teamName).appendChild(node);
-        }
+			var item = document.createElement("LI");
+			item.className = 'down';
+			{
+				var card = document.createElement("DEV");			  // Create a dev
+				card.className = 'flex-container balance-card'
+				{
+					var body = document.createElement("DEV");
+					body.className = 'card-body';
+					{
+						var title = document.createElement("H5");
+						title.className = 'card-title';
+						{
+							var textnode = document.createTextNode(player.name);
+							title.appendChild(textnode);
+						}
+
+						var paragraph = document.createElement("P");
+						paragraph.className = 'card-text';
+						{
+							var textnode = document.createTextNode(player.tear + " " + player.dev);
+							paragraph.appendChild(textnode);
+						}
+						body.appendChild(title)
+						body.appendChild(paragraph)
+					}
+
+					var image = document.createElement("IMG");
+					image.className = 'card-img-right'
+					image.src = getSrcByRank(player.tear);
+
+					card.appendChild(body);
+					card.appendChild(image);
+				}
+				item.appendChild(card);
+			}
+			document.getElementById(teamName).appendChild(item);
+	  }
+
+		function show_teams(score1, team1, score2, team2) {
+			$("#team1").empty();
+			$("#team1Strength").html(score1);
+			$("#team2").empty();
+			$("#team2Strength").html(score2);
+			team1.forEach(function(player, index) {
+				appendToTeam("team1", player);
+			});
+			team2.forEach(function(player, index) {
+				appendToTeam("team2", player);
+			});
+		}
 
 		function balanceTeams() {
 			console.log("balancing started");
@@ -647,14 +708,7 @@ header {
 			//bestTeam1 and bestTeam2 are ready for deployment!
 			console.log("Team 1 (" + bestTeam1MMR + ") : " + bestTeam1);
 			console.log("Team 2 (" + bestTeam2MMR + ") : " + bestTeam2);
-			$("#team1").empty();
-			$("#team2").empty();
-			bestTeam1.forEach(function(player, index) {
-				appendToTeam("team1", player);
-			});
-			bestTeam2.forEach(function(player, index) {
-				appendToTeam("team2", player);
-			});
+			show_teams(bestTeam1MMR, bestTeam1, bestTeam2MMR, bestTeam2);
 		}
 
 		function getMMR(player) {
@@ -771,17 +825,23 @@ header {
 			</div>
 
 			<div id="balanced" class="balance">
-				<p> Balanced teams:</p>
 				<div class="flex-container">
-					<ul id="team1" style="width:50%; ">
-					</ul>
-					<ul id="team2" style="width:50%;">
-					</ul>
+					<div style="width:50%; ">
+						<p>Team 1 (strength:<span id="team1Strength">0000</span>)</p>
+						<ul  id="team1">
+						</ul>
+					</div>
+					<div style="width:50%;">
+						<p>Team 2 (strength:<span id="team2Strength">0000</span>)</p>
+						<ul id="team2">
+						</ul>
+					</div>
 				</div>
 			</div>
 
 		</div>
 		<button id="balance_btn" type="button" class="btn btn-success" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
+		<button id="back_btn" type="button" class="btn" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
 	</div>
 
 	<!-------------------- FRIENDS SIDE WINDOW ------------------------>
