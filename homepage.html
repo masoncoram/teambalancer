@@ -582,8 +582,114 @@ header {
 		function balanceTeams() {
 			console.log("balancing started");
 			activePlayers = friends.filter(friend => friend.playing);
-
+			const BASE_MMR = 850.0;
+			const BASE_MMR_COUNTER = 60.0;
+			var bestTeam1 = [];
+			var bestTeam2 = [];
+			var bestTeam1MMR = 0;
+			var bestTeam2MMR = 0;
+			var bestdiff = 99999;
+			var currdiff = 0;
+			for (var n=0; n<1000; n++) {
+				var team1MMR = 0;
+				var team2MMR = 0;
+				activePlayers = shuffle(activePlayers);
+				var team1List = [];
+				var team2List = [];
+				var i = 0;
+				while (i < players.size()/2) {
+					team2List.push(activePlayers[i*2]);
+					team1List.push(activePlayers[(i*2)+1]);
+					i++;
+				}
+	
+				/* Check difference in MMR, keep best choice */
+				for (var y = 0; y < team1List.size(); y++) {
+            	    team1MMR += getMMR(team1List[y]);
+            	}
+            	for (var z = 0; z < team2List.size(); z++) {
+            	    team2MMR += getMMR(team2List[z]);
+            	}
+            	currdiff = (team1MMR > team2MMR) ? team1MMR - team2MMR : team2MMR - team1MMR;
+            	if (currdiff < bestdiff) {
+                	bestdiff = currdiff;
+                	bestTeam1 = new Array(team1List);
+                	bestTeam2 = new Array(team2List);
+					bestTeam1MMR = team1MMR;
+					bestTeam2MMR = team2MMR;
+                	//PrintToSortedTeam(team1View, bestTeam1);
+                	//PrintToSortedTeam(team2View, bestTeam2);
+                	//team1Strength.setText((getString(R.string.strength) + " " + team1MMR));
+                	//team2Strength.setText((getString(R.string.strength) + " " + team2MMR));
+            	}
+			}
+			//bestTeam1 and bestTeam2 are ready for deployment!
+			console.log("Team 1 (" + bestTeam1MMR + ") : " + bestTeam1);
+			console.log("Team 2 (" + bestTeam2MMR + ") : " + bestTeam2);
+			
 		}
+
+		function getMMR(player) {
+			const BASE_MMR = 850.0;
+            const BASE_MMR_COUNTER = 60.0;
+			var rankOrdinal = 0;
+			var rank = player.tear;
+			var div = player.dev;
+			switch(div) {
+				case "I":
+                    rankOrdinal += 4;
+                    break;
+				case "II":
+                    rankOrdinal += 3;
+                    break;
+                case "III":
+                    rankOrdinal += 2;
+                    break;
+                case "IV":
+                    rankOrdinal += 1;
+                    break;
+			}
+			switch(rank) {
+				case "BRONZE":
+					rankOrdinal += 1;
+					break;
+				case "SILVER":
+					rankOrdinal += 6;
+					break;
+				case "GOLD":
+                    rankOrdinal += 11;
+                    break;
+				case "PLATINUM":
+                    rankOrdinal += 16;
+                    break;
+				case "DIAMOND":
+                    rankOrdinal += 21;
+                    break;
+				case "MASTER":
+                    rankOrdinal = 26;
+                    break;
+				case "CHALLENGER":
+                    rankOrdinal = 27;
+                    break;
+			}
+			var totalRanks = 28;
+			var multiplier = 1.0 + (0.3 * (rankOrdinal / (totalRanks-2)));
+			var floatMMR = (BASE_MMR + (BASE_MMR_COUNTER * multiplier * rankOrdinal));
+			var MMR = parseInt(floatMMR, 10);
+			return MMR;
+		}
+		
+		function shuffle(a) {
+    		var j, x, i;
+    		for (i = a.length - 1; i > 0; i--) {
+        		j = Math.floor(Math.random() * (i + 1));
+        		x = a[i];
+        		a[i] = a[j];
+        		a[j] = x;
+   			}
+    		return a;
+		}
+
 		
 	</script>
 
