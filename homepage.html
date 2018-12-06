@@ -276,16 +276,22 @@ h1 {
 		function display_friends() {
 			console.log("generating friend-list html");
 			$("#friends-list").empty();
+			var indexMap = [];
 
 			var search = $("#search-box").val().toLowerCase();
 			if (isEmptyOrSpaces(search)) {
 				console.log("no search, showing all");
 				toShow = friends;
+				indexMap = Array.apply(null, {length: friends.length}).map(Number.call, Number)
 			} else {
 				console.log("filtering on search:" + search);
-				var toShow = friends.filter(function (el) {
-					return el.name.toLowerCase().includes(search) ||
-						el.tear.includes(search);
+				var toShow = friends.filter(function (el, index) {
+					if (el.name.toLowerCase().includes(search) ||
+						el.tear.includes(search)) {
+						indexMap.push(index);
+						return true;
+					}
+					return false;
 				});
 			}
 
@@ -294,9 +300,10 @@ h1 {
 			} else {
 				toShow.forEach(function(element, index) {
 					var name = element.name;
+					var playing = element.playing;
 					var rank_str = element.tear + element.dev;
 					var rank_img_src = getSrcByRank(element.tear);
-					appendFrend(index, name, rank_str, rank_img_src);
+					appendFrend(indexMap[index], name, rank_str, rank_img_src);
 				}); 
 			}
 
@@ -305,6 +312,15 @@ h1 {
 		function addToFriendsList(inName, inTear, inDev) {
 			console.log("adding friend with name:" + inName + " rank:" + inTear );
 			friends.push({playing:false, name:inName, tear:inTear, dev:inDev});
+			sortFriendsList();
+		}
+		function sortFriendsList() {
+			friends.sort(function (a, b) {
+				if (b.name > a.name) {
+					return -1;
+				}
+				return 1;
+			});
 		}
 		
 		function addPlayerToList(friendIndex)
@@ -332,6 +348,7 @@ h1 {
 						{playing:false, name:'Blank', tear:'bronze', dev:1},
 						{playing:false, name:'phoenixteam', tear:'gold', dev:5}
 			];
+			sortFriendsList();
 			num_players = 0;
 			
 
@@ -385,7 +402,12 @@ h1 {
 
 		function appendFrend(index, name, rank_str, rank_img_src) {
 			var item = document.createElement("LI");             // Create a <li> item
-			item.className = 'up';
+			if (friends[index].playing) {
+				item.className = 'down';
+			} else {
+				item.className = 'up';
+			}
+
 			{
 				var card = document.createElement("DEV");			  // Create a dev
 				card.className = 'flex-container friend-card'
