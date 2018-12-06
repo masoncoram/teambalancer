@@ -31,6 +31,15 @@
 	height:60vh;
 }
 
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 ul {
   list-style: none;
 }
@@ -452,6 +461,7 @@ header {
 						title.className = 'card-title';
 						{
 							var textnode = document.createTextNode(name);
+							textnode.className = 'unselectable';
 							title.appendChild(textnode);
 						}
 
@@ -459,6 +469,7 @@ header {
 						paragraph.className = 'card-text';
 						{
 							var textnode = document.createTextNode(rank_str);
+							textnode.className = 'unselectable';
 							paragraph.appendChild(textnode);
 						}
 						body.appendChild(title)
