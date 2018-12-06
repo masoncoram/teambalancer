@@ -16,6 +16,17 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<style>
 
+/*
+ *  <color name="colorPrimaryLite">#009cb7</color>
+ *  <color name="colorPrimaryLiter">#00aecc</color>
+ *  <color name="colorPrimary">#00849b</color>
+ *  <color name="colorPrimaryDark">#00849b</color>
+ *  <color name="colorPrimaryTint">#16c8c8</color>
+ *  <color name="colorPrimaryTint2">#00dfee</color>
+ *  <color name="colorAccent">#f2d300</color>
+ *
+ */
+
 .balance {
 	height:60vh;
 }
@@ -98,17 +109,17 @@ h1 {
 }
 
 #friends ul li.down {
-	background: #eeeeee;
+	background: #009cb7;
 }
 
 #friends ul li.up:hover {
 	border-color: #777;
-	background: #eeeeee;
+	background: #00dfee;
 }
 
 #friends ul li.down:hover {
 	border-color: #777;
-	background: #e3e3e3;
+	background: #00aecc;
 }
 
 #friends ul li:active {
@@ -287,7 +298,7 @@ h1 {
 				console.log("filtering on search:" + search);
 				var toShow = friends.filter(function (el, index) {
 					if (el.name.toLowerCase().includes(search) ||
-						el.tear.includes(search)) {
+						el.tear.toLowerCase().includes(search)) {
 						indexMap.push(index);
 						return true;
 					}
@@ -316,7 +327,7 @@ h1 {
 		}
 		function sortFriendsList() {
 			friends.sort(function (a, b) {
-				if (b.name > a.name) {
+				if (b.name.toLowerCase() > a.name.toLowerCase()) {
 					return -1;
 				}
 				return 1;
@@ -336,17 +347,17 @@ h1 {
 		$( document ).ready(function() {
 			console.log("ready function executed");
 			friends = [
-						{playing:false, name:'Benjamin Davis', tear:'bronze', dev:2},
-						{playing:false, name:'Bjergsen', tear:'challenger', dev:1},
-						{playing:false, name:'Faker', tear:'silver', dev:5},
-						{playing:false, name:'Harry Potter', tear:'master', dev:1},
-						{playing:false, name:'Trident', tear:'platinum', dev:2},
-						{playing:false, name:'US Economy', tear:'diamond', dev:1},
-						{playing:false, name:'ddog', tear:'gold', dev:4},
-						{playing:false, name:'distruction66', tear:'diamond', dev:1},
-						{playing:false, name:'Stratogy', tear:'silver', dev:5},
-						{playing:false, name:'Blank', tear:'bronze', dev:1},
-						{playing:false, name:'phoenixteam', tear:'gold', dev:5}
+						{playing:false, name:'Benjamin Davis', tear:'BRONZE', dev:2},
+						{playing:false, name:'Bjergsen', tear:'CHALLENGER', dev:1},
+						{playing:false, name:'Faker', tear:'SILVER', dev:5},
+						{playing:false, name:'Harry Potter', tear:'MASTER', dev:1},
+						{playing:false, name:'Trident', tear:'PLATINUM', dev:2},
+						{playing:false, name:'US Economy', tear:'DIAMOND', dev:1},
+						{playing:false, name:'ddog', tear:'GOLD', dev:4},
+						{playing:false, name:'distruction66', tear:'DIAMOND', dev:1},
+						{playing:false, name:'Stratogy', tear:'SILVER', dev:5},
+						{playing:false, name:'Blank', tear:'BRONZE', dev:1},
+						{playing:false, name:'phoenixteam', tear:'GOLD', dev:5}
 			];
 			sortFriendsList();
 			num_players = 0;
@@ -512,11 +523,12 @@ h1 {
 				function(data2) {
 					//data2 is the JSON string
 					var ranked = false;
-					console.log("parsing second response");
-					data2.forEach(function(queueType) {
-						if (queueType == "RANKED_SOLO_5x5") {
-							var tier = data2[0].tier;
-							var div = data2[0].rank;
+					console.log("parsing second response:");
+					data2.forEach(function(el) {
+						console.log(el.queueType);
+						if (el.queueType == "RANKED_SOLO_5x5") {
+							var tier = el.tier;
+							var div = el.rank;
 							ranked = true;
 							console.log("Rank is " + tier + " " + div);
 							addToFriendsList(summnerName, tier, div);
