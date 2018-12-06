@@ -279,8 +279,18 @@ h1 {
 		function addPlayerToList(friendIndex)
 		{
 			num_players += 1;
-			console.log("adding player at i=" + friendIndex + ' ' + friends[friendIndex].name);
-			console.log("this is player number " + num_players); 
+			countIndicator = $("#num_players");
+			if (num_players < 10) {
+				countIndicator.css('color', 'black');
+				countIndicator.text(num_players + "/10");
+			} else if (num_players > 10) {
+				countIndicator.css('color', 'red');
+				countIndicator.text(num_players + "/10");
+			} else {
+				countIndicator.css('color', 'green');
+				countIndicator.text(num_players + "/10");
+			}
+
 			friends[friendIndex].playing = true;
 			appendPlayer(friends[friendIndex]);
 		}
@@ -483,13 +493,6 @@ h1 {
 		  </form>
       </div>
 	
-    <!--	
-	<?php
-    showCart();
-    ?>
-	-->
-	
-
       <div class="equalspace">
         <div></div>
         <button onclick="findSummoner()" type="button" class="btn btn-info"><font size="6">Add Summoner</font></button>
@@ -509,7 +512,7 @@ h1 {
 	<div>
 		<div class="jumbotron">
 			<div id="listing" class="balance" style="">
-				<p> Selected players:</p>
+				<p> Selected players: <span id="num_players">0/10</span></p>
 				<ul id="waiting-list">
 				</ul>
 			</div>
@@ -518,16 +521,8 @@ h1 {
 				<p> Balanced teams:</p>
 				<div class="flex-container">
 					<ul id="team1" style="width:50%; ">
-						<li>Benjamin Davis</li>
-						<li>US Economy</li>
-						<li>Harry Potter</li>
-						<li>Faker</li>
 					</ul>
 					<ul id="team2" style="width:50%;">
-						<li>ddog</li>
-						<li>Bjergsen</li>
-						<li>phoenixteam</li>
-						<li>Trident</li>
 					</ul>
 				</div>
 			</div>
@@ -547,84 +542,12 @@ h1 {
 			<li>
 				<div class="flex-container friend-card"> <!--style="width: 18rem;"-->
 					<div class="card-body">
-						<h5 class="card-title">Benjamin Davis</h5>
+						<h5 class="card-title">Example</h5>
 						<p class="card-text">
-						card's content.
+						rank
 						</p>
 					</div>
-					<img class="card-img-right" src="images/bronze.png" alt="Card image cap">
-					<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
-				</div>
-			</li>
-			<li>
-				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
-					<div class="card-body">
-						<h5 class="card-title">US Economy</h5>
-						<p class="card-text">
-						card's content.
-						</p>
-					</div>
-					<img class="card-img-right" src="images/diamond.png" alt="Card image cap">
-					<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
-				</div>
-			</li>
-			<li>
-				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
-					<div class="card-body">
-						<h5 class="card-title">Harry Potter</h5>
-						<p class="card-text">
-						card's content.
-						</p>
-					</div>
-					<img class="card-img-right" src="images/master.png" alt="Card image cap">
-					<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
-				</div>
-			</li>
-			<li>
-				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
-					<div class="card-body">
-						<h5 class="card-title">Faker</h5>
-						<p class="card-text">
-						card's content.
-						</p>
-					</div>
-					<img class="card-img-right" src="images/silver.png" alt="Card image cap">
-					<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
-				</div>
-			</li>
-			<li>
-				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
-					<div class="card-body">
-						<h5 class="card-title">Bjergsen</h5>
-						<p class="card-text">
-						card's content.
-						</p>
-					</div>
-					<img class="card-img-right" src="images/challenger.png" alt="Card image cap">
-					<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
-				</div>
-			</li>
-			<li>
-				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
-					<div class="card-body">
-						<h5 class="card-title">phoenixteam</h5>
-						<p class="card-text">
-						card's content.
-						</p>
-					</div>
-					<img class="card-img-right" src="images/gold.png" alt="Card image cap">
-					<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
-				</div>
-			</li>
-			<li>
-				<div class="flex-container friend_card"> <!--style="width: 18rem;"-->
-					<div class="card-body">
-						<h5 class="card-title">Trident</h5>
-						<p class="card-text">
-						card's content.
-						</p>
-					</div>
-					<img class="card-img-right" src="images/platinum.png" alt="Card image cap">
+					<img class="card-img-right" src="images/UNRANKED.png" alt="Card image cap">
 					<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
 				</div>
 			</li>
