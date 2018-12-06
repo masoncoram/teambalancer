@@ -278,6 +278,11 @@ h1 {
 		
 		function addPlayerToList(friendIndex)
 		{
+			if (friends[friendIndex].playing) {
+				console.log(friends[friendIndex].name + " is already selected.");
+				// TODO remove the player insted of doing nothing
+				return;
+			}
 			num_players += 1;
 			countIndicator = $("#num_players");
 			if (num_players < 10) {
