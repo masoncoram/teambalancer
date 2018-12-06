@@ -83,20 +83,34 @@ h1 {
 }
 
 #friends ul li {
-    margin-bottom:10px;
-    padding-left:10px;
-    border: 1px solid #aaa;
-    border-radius: 8px;
+	margin-bottom:10px;
+	padding-left:10px;
+	border: 1px solid #aaa;
+	border-radius: 8px;
 }
 
-#friends ul li:hover {
+#friends ul li.up {
+	border-color: #777;
+	background: #ffffff;
+}
+
+#friends ul li.down {
+	background: #eeeeee;
+}
+
+#friends ul li.up:hover {
 	border-color: #777;
 	background: #eeeeee;
 }
 
+#friends ul li.down:hover {
+	border-color: #777;
+	background: #e3e3e3;
+}
+
 #friends ul li:active {
-  background: #eee;
-  box-shadow: inset 0 1px 1px #666;
+	background: #eee;
+	box-shadow: inset 0 1px 1px #666;
 }
 
 /* cards */
@@ -118,7 +132,7 @@ h1 {
 
 
 
-/************************* Resoibsuve desugb *********************************/
+/************************* Responsive design *********************************/
 /* When the screen is less than 600px wide, stack the links and the search
    field vertically instead of horizontally */
 @media screen and (max-width: 600px) {
@@ -131,7 +145,7 @@ h1 {
 
 
 
-/* Modal STUFF */
+/********************** Modal STUFF ************************************/
 /* Center the image and position the close button */
 .imgcontainer {
     text-align: center;
@@ -168,21 +182,6 @@ h1 {
     padding-bottom: 30px;
 }
 
-/* The Close Button (x) */
-.close {
-    position: absolute;
-    right: 25px;
-    top: 0;
-    color: #000;
-    font-size: 35px;
-    font-weight: bold;
-}
-
-.close:hover,.close:focus {
-    color: red;
-    cursor: pointer;
-}
-
 /* Add Zoom Animation */
 .animate {
     animation: zoom 0.6s
@@ -201,6 +200,21 @@ h1 {
     0%    {transform: scale(1);}
     15%   {transform: scale(1.09);}
     40%   {transform: scale(1);}
+}
+
+/* The Close Button (x) */
+.close {
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.close:hover,.close:focus {
+    color: red;
+    cursor: pointer;
 }
 
 .block {
@@ -223,7 +237,6 @@ h1 {
 	background-color: blue;
 }
 
-
 	</style>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
@@ -231,12 +244,9 @@ h1 {
 	<script>
 
 		function addPlayers() {
-            
-            //var popuptable = document.getElementById('checkout-table');
+			//var popuptable = document.getElementById('checkout-table');
 			//popuptable.innerHTML = data;
-
-            document.getElementById('modal-wrapper').style.display='block';
-
+			document.getElementById('modal-wrapper').style.display='block';
 		}
 
 
@@ -259,11 +269,24 @@ h1 {
 			return '/images/' + rank + '.png';
 		}
 
+		function isEmptyOrSpaces(str){
+			    return str === null || str.match(/^ *$/) !== null;
+		}
 		function display_friends() {
+			console.log("generating friend-list html");
 			$("#friends-list").empty();
-			// fliter friends by search
-			// sort friends by name/rank/what ever
-			friends.forEach(function(element, index) {
+
+			var search = $("#search-box").val();
+			if (isEmptyOrSpaces(search)) {
+				console.log("no search, showing all");
+				toShow = friends;
+			} else {
+				console.log("filtering on search:" + search);
+				var toShow = friends.filter(function (el) {
+					return el.name.includes(search) || el.tear.includes(search);
+				});
+			}
+			toShow.forEach(function(element, index) {
 				var name = element.name;
 				var rank_str = element.tear + element.dev;
 				var rank_img_src = getSrcByRank(element.tear);
@@ -273,35 +296,19 @@ h1 {
 		}
 
 		function addToFriendsList(inName, inTear, inDev) {
+			console.log("adding friend with name:" + inName + " rank:" + inTear );
 			friends.push({playing:false, name:inName, tear:inTear, dev:inDev});
 		}
 		
 		function addPlayerToList(friendIndex)
 		{
-			if (friends[friendIndex].playing) {
-				console.log(friends[friendIndex].name + " is already selected.");
-				// TODO remove the player insted of doing nothing
-				return;
-			}
-			num_players += 1;
-			countIndicator = $("#num_players");
-			if (num_players < 10) {
-				countIndicator.css('color', 'black');
-				countIndicator.text(num_players + "/10");
-			} else if (num_players > 10) {
-				countIndicator.css('color', 'red');
-				countIndicator.text(num_players + "/10");
-			} else {
-				countIndicator.css('color', 'green');
-				countIndicator.text(num_players + "/10");
-			}
+			incrementPlayers();
 
 			friends[friendIndex].playing = true;
 			appendPlayer(friends[friendIndex]);
 		}
 
-		var friends = []
-		var players = [];
+		var friends = [];
 		var num_players = 0;
 		$( document ).ready(function() {
 			console.log("ready function executed");
@@ -314,7 +321,6 @@ h1 {
 						{playing:false, name:'US Economy', tear:'diamond', dev:1},
 						{playing:false, name:'phoenixteam', tear:'gold', dev:5}
 			];
-			players = [];
 			num_players = 0;
 			
 
@@ -325,6 +331,35 @@ h1 {
 			display_friends(friends);
 		}); // end document.ready 
 
+		function printPlayerNum() {
+			countIndicator = $("#num_players");
+			if (num_players < 10) {
+				countIndicator.css('color', 'black');
+				countIndicator.text(num_players + "/10");
+			} else if (num_players > 10) {
+				countIndicator.css('color', 'red');
+				countIndicator.text(num_players + "/10");
+			} else {
+				countIndicator.css('color', 'green');
+				countIndicator.text(num_players + "/10");
+			}
+		}
+		function incrementPlayers() {
+			num_players += 1;
+			printPlayerNum();
+			return num_players;
+		}
+		function decrementPlayers() {
+			num_players -= 1;
+			printPlayerNum();
+			return num_players;
+		}
+
+		function removePlayer(name) {
+			$("#waiting-list").children(":contains('"+name+"')").remove();
+			friends.filter(entry => entry.name == name)[0].playing = false;
+			decrementPlayers();
+		}
 		function appendPlayer(player) {
 			var node = document.createElement("LI");
 			var textnode = document.createTextNode(player.name);
@@ -332,9 +367,10 @@ h1 {
 			document.getElementById("waiting-list").appendChild(node);
 		}
 
+
 		function appendFrend(index, name, rank_str, rank_img_src) {
-			console.log("adding friend with name:" + name + " rank:" + rank_str );
 			var item = document.createElement("LI");             // Create a <li> item
+			item.className = 'up';
 			{
 				var card = document.createElement("DEV");			  // Create a dev
 				card.className = 'flex-container friend-card'
@@ -366,39 +402,49 @@ h1 {
 					var span = document.createElement("SPAN");
 					span.className = 'close';
 					span.title='Remove Card'
-					if (span.addEventListener) {
-						span.addEventListener("click", function() {
-							console.log("removing " + name + " from list");
-							document.getElementById("friends-list").removeChild(item);
-						});
-					} else if (span.attachEvent) {
-						span.attachEvent("click", function() {
-							console.log("removing " + name + " from list");
-							document.getElementById("friends-list").removeChild(item);
-						});
-					} else {
-						console.log("X butten event not added");
-					}
+					
 					{
 						var textnode = document.createTextNode("×")
+						function removeFunc () {
+							console.log("removing " + name + " from list");
+							if (friends[index].playing) {
+								removePlayer(name);
+							}
+							document.getElementById("friends-list").removeChild(item);
+						}
+						if (span.addEventListener) {
+							span.addEventListener("click", removeFunc);
+						} else if (span.attachEvent) {
+							span.attachEvent("click", removeFunc);
+						} else {
+							console.log("X butten event not added");
+						}
 						span.appendChild(textnode);
 					}
 
 					card.appendChild(body);
 					card.appendChild(image);
 					card.appendChild(span);
-					if (card.addEventListener) {
-						card.addEventListener("click", function(e) {
+					{
+						function cardFunc(e) {
 							if (e.target.tagName.toLowerCase() == "span"){return;}
-							addPlayerToList(index);
-						}); 
-					} else if (card.attachEvent) {
-						card.attachEvent("click", function(e) {
-							if (e.target.tagName.toLowerCase() == "span"){return;}
-							addPlayerToList(index);
-						}); 
-					} else {
-						console.log("card event added");
+							if (friends[index].playing) {
+								console.log(friends[index].name + " is already selected.");
+								removePlayer(friends[index].name);
+								item.className = 'up';
+							} else {
+								addPlayerToList(index);
+								item.className = 'down';
+							}
+						} 
+
+						if (card.addEventListener) {
+							card.addEventListener("click", cardFunc); 
+						} else if (card.attachEvent) {
+							card.attachEvent("click", cardFunc); 
+						} else {
+							console.log("card event added");
+						}
 					}
 
 				}
@@ -409,14 +455,12 @@ h1 {
 			list.appendChild(item);
 		}
 
-
-
 		function apiSummoner() {
 			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
 			var summnerName = $("#name-box").val()
 			const proxyurl = "https://cors-anywhere.herokuapp.com/";
 			const url = encodeURI("https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/" + summnerName + "?api_key=");
-			console.log("fetching url:"+url)
+			console.log("fetching id for " + summnerName)
 			$.getJSON(proxyurl + url + apikey, 
 			function(data) {
 				//data is the JSON string
@@ -428,7 +472,7 @@ h1 {
 				function(data2) {
 					//data2 is the JSON string
 					var ranked = false;
-					console.log("got data2:" + data2);
+					console.log("parsing second response");
 					data2.forEach(function(queueType) {
 						if (queueType == "RANKED_SOLO_5x5") {
 							var tier = data2[0].tier;
@@ -457,15 +501,12 @@ h1 {
 		}
 
 
-		function logSearch() {
-			console.log("searching ");
-		}
-
 		function findSummoner() {
 			console.log("starting API call.. ");
 		}
 
 		function balanceTeams() {
+			console.log("balancing started");
 			activePlayers = friends.filter(friend => friend.playing);
 
 		}
@@ -537,9 +578,10 @@ h1 {
 	</div>
 	<div id="friends" class="right scrollable">
 		<div class="flex-container">
-			<form id="search" onSubmit="return logSearch()">
-				<input type="text" placeholder="Search..." id="search-box">
-				<button type="submit"><i class="fa fa-search"></i></button>
+			<form onSubmit="display_friends(); return false;">
+				<input id="search-box" onchange="display_friends();"
+				onkeyup="this.onchange();" onpaste="this.onchange();"
+				oninput="this.onchange();" type="text" placeholder="Search..."/>
 			</form>
 			<input id="add-frend-button" type="image" src="images/add-friend-512.png" onclick="addPlayers()"style="max-width:52px; max-height:52px;">
 		</div>
