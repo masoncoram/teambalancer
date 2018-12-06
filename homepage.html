@@ -295,6 +295,7 @@ header {
 				$("#listing").hide();
 				$("#balanced").show();
 				$("#balance_btn").html('Back');
+				balanceTeams();
 			}
 		}
 
@@ -579,6 +580,15 @@ header {
 			console.log("starting API call.. ");
 		}
 
+		function appendToTeam(teamName, player) {
+			console.log("name: " + player.name);
+			console.log("stringify: " + JSON.stringify(player));
+            var node = document.createElement("LI");
+            var textnode = document.createTextNode(player.name);
+            node.appendChild(textnode);
+            document.getElementById(teamName).appendChild(node);
+        }
+
 		function balanceTeams() {
 			console.log("balancing started");
 			activePlayers = friends.filter(friend => friend.playing);
@@ -597,24 +607,24 @@ header {
 				var team1List = [];
 				var team2List = [];
 				var i = 0;
-				while (i < players.size()/2) {
+				while (i < activePlayers.length/2) {
 					team2List.push(activePlayers[i*2]);
 					team1List.push(activePlayers[(i*2)+1]);
 					i++;
 				}
 	
 				/* Check difference in MMR, keep best choice */
-				for (var y = 0; y < team1List.size(); y++) {
+				for (var y = 0; y < team1List.length; y++) {
             	    team1MMR += getMMR(team1List[y]);
             	}
-            	for (var z = 0; z < team2List.size(); z++) {
+            	for (var z = 0; z < team2List.length; z++) {
             	    team2MMR += getMMR(team2List[z]);
             	}
             	currdiff = (team1MMR > team2MMR) ? team1MMR - team2MMR : team2MMR - team1MMR;
             	if (currdiff < bestdiff) {
                 	bestdiff = currdiff;
-                	bestTeam1 = new Array(team1List);
-                	bestTeam2 = new Array(team2List);
+                	bestTeam1 = team1List;
+                	bestTeam2 = team2List;
 					bestTeam1MMR = team1MMR;
 					bestTeam2MMR = team2MMR;
                 	//PrintToSortedTeam(team1View, bestTeam1);
@@ -626,7 +636,14 @@ header {
 			//bestTeam1 and bestTeam2 are ready for deployment!
 			console.log("Team 1 (" + bestTeam1MMR + ") : " + bestTeam1);
 			console.log("Team 2 (" + bestTeam2MMR + ") : " + bestTeam2);
-			
+			$("#team1").empty();
+			$("#team2").empty();
+			bestTeam1.forEach(function(player, index) {
+				appendToTeam("team1", player);
+			});
+			bestTeam2.forEach(function(player, index) {
+				appendToTeam("team2", player);
+			});
 		}
 
 		function getMMR(player) {
