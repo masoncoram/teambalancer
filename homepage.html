@@ -48,12 +48,15 @@ h1 {
 }
 
 .search-container {
+	position: relative;
+	display: flex;
 	flex-direction: row;
-    padding: 6px;
-    margin-top: 8px;
-    margin-bottom: 8px;
-    margin-right: 16px;
-    font-size: 12px;
+	overflow: hidden;
+	padding: 6px;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	margin-right: 16px;
+	font-size: 12px;
 }
 
 #search {
@@ -243,9 +246,7 @@ h1 {
 	</script>
 	<script>
 
-		function addPlayers() {
-			//var popuptable = document.getElementById('checkout-table');
-			//popuptable.innerHTML = data;
+		function showPopup() {
 			document.getElementById('modal-wrapper').style.display='block';
 		}
 
@@ -276,22 +277,28 @@ h1 {
 			console.log("generating friend-list html");
 			$("#friends-list").empty();
 
-			var search = $("#search-box").val();
+			var search = $("#search-box").val().toLowerCase();
 			if (isEmptyOrSpaces(search)) {
 				console.log("no search, showing all");
 				toShow = friends;
 			} else {
 				console.log("filtering on search:" + search);
 				var toShow = friends.filter(function (el) {
-					return el.name.includes(search) || el.tear.includes(search);
+					return el.name.toLowerCase().includes(search) ||
+						el.tear.includes(search);
 				});
 			}
-			toShow.forEach(function(element, index) {
-				var name = element.name;
-				var rank_str = element.tear + element.dev;
-				var rank_img_src = getSrcByRank(element.tear);
-				appendFrend(index, name, rank_str, rank_img_src);
-			}); 
+
+			if (toShow.length == 0) {
+				showAddCard();
+			} else {
+				toShow.forEach(function(element, index) {
+					var name = element.name;
+					var rank_str = element.tear + element.dev;
+					var rank_img_src = getSrcByRank(element.tear);
+					appendFrend(index, name, rank_str, rank_img_src);
+				}); 
+			}
 
 		}
 
@@ -319,6 +326,10 @@ h1 {
 						{playing:false, name:'Harry Potter', tear:'master', dev:1},
 						{playing:false, name:'Trident', tear:'platinum', dev:2},
 						{playing:false, name:'US Economy', tear:'diamond', dev:1},
+						{playing:false, name:'ddog', tear:'gold', dev:4},
+						{playing:false, name:'distruction66', tear:'diamond', dev:1},
+						{playing:false, name:'Stratogy', tear:'silver', dev:5},
+						{playing:false, name:'Blank', tear:'bronze', dev:1},
 						{playing:false, name:'phoenixteam', tear:'gold', dev:5}
 			];
 			num_players = 0;
@@ -332,16 +343,20 @@ h1 {
 		}); // end document.ready 
 
 		function printPlayerNum() {
-			countIndicator = $("#num_players");
+			var countIndicator = $("#num_players");
+			var btn = $("#balance_btn");
 			if (num_players < 10) {
 				countIndicator.css('color', 'black');
 				countIndicator.text(num_players + "/10");
+				btn.prop("disabled",true);
 			} else if (num_players > 10) {
 				countIndicator.css('color', 'red');
 				countIndicator.text(num_players + "/10");
+				btn.prop("disabled",true);
 			} else {
 				countIndicator.css('color', 'green');
 				countIndicator.text(num_players + "/10");
+				btn.prop("disabled",false);
 			}
 		}
 		function incrementPlayers() {
@@ -454,6 +469,9 @@ h1 {
 			var list = document.getElementById("friends-list");
 			list.appendChild(item);
 		}
+		function showAddCard() {
+			console.log("addCard");
+		}
 
 		function apiSummoner() {
 			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
@@ -498,6 +516,7 @@ h1 {
 			var btn = $("#balance_btn");
 			btn.click(swapPlayerView);
 			btn.html('Balance!');
+			btn.prop("disabled",true);
 		}
 
 
@@ -521,23 +540,26 @@ h1 {
 <body>
 
   
-  <div id="modal-wrapper" class="modal" style="display:none;" >
+	<!-------------------------- POPUP -------------------------->
+	<div id="modal-wrapper" class="modal" style="display:none;" >
+		<form class="modal-content animate" action="/cart/">
 
-
-    <form class="modal-content animate" action="/cart/">
-
-      <div class="imgcontainer">
-        <span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
-      	  <img src="images/add_friend-512.png" alt="Avatar" class="avatar">
-          <h1 style="text-align:center">Type Summoner name or copy-paste lobby chat:</h1>
-		  <form action=""id="search" onSubmit="return apiSummoner()">
-		    <input type="text" placeholder="Summoner Name..." id="name-box">
+			<div class="imgcontainer">
+				<span
+					onclick="document.getElementById('modal-wrapper').style.display='none'"
+					class="close" title="Close PopUp">&times;</span>
+				<img src="images/add_friend-512.png" alt="Avatar" class="avatar">
+				<h1 style="text-align:center">
+					Type Summoner name or copy-paste lobby chat:
+				</h1>
+			<form action=""id="search" onSubmit="return apiSummoner()">
+				<input type="text" placeholder="Summoner Name..." id="name-box">
 			<div></div>
 			<input type="submit" class="btn btn-info" value="Add Summoner">
 			<!--<input type="submit" class="btn btn-info" value="Add Summoner"><font size="6">Add Summoner</font></input>-->
 			<button onclick="apiSummoner()" type="button" class="btn btn-info"><font size="6">Add Summoner</font></button>
-		  </form>
-      </div>
+			</form>
+		</div>
 	
       <div class="equalspace">
         <div></div>
@@ -545,16 +567,12 @@ h1 {
         <!-- <button type="submit" class="btn btn-success"><font size="6">Checkout</font></button> -->
 		<div></div>
       </div>
-
     </form>
-
   </div>
 
+
   
-
-	<div class="flex-container">
-
-	</div>
+  <!---------------------- MAIN DISPLAY ARIEA ------------------>
 	<div>
 		<div class="jumbotron">
 			<div id="listing" class="balance" style="">
@@ -576,14 +594,16 @@ h1 {
 		</div>
 		<button id="balance_btn" type="button" class="btn btn-success" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
 	</div>
+
+	<!-------------------- FRIENDS SIDE WINDOW ------------------------>
 	<div id="friends" class="right scrollable">
-		<div class="flex-container">
+		<div class="search-container">
 			<form onSubmit="display_friends(); return false;">
 				<input id="search-box" onchange="display_friends();"
 				onkeyup="this.onchange();" onpaste="this.onchange();"
 				oninput="this.onchange();" type="text" placeholder="Search..."/>
 			</form>
-			<input id="add-frend-button" type="image" src="images/add-friend-512.png" onclick="addPlayers()"style="max-width:52px; max-height:52px;">
+			<input id="add-frend-button" type="image" src="images/add-friend-512.png" onclick="showPopup()"style="max-width:52px; max-height:52px;">
 		</div>
 		<ul id="friends-list">
 			<li>
