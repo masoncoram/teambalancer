@@ -53,9 +53,7 @@ ul {
 .jumbotron {
 	margin-right: 27vw;
 	margin-left: 2vw;
-	padding-right: 2vw;
-	padding-left: 2vw;
-	padding-top: 20px;
+	padding: 16px;
 	height: 80vh;
 	overflow: scroll;
 }
@@ -67,6 +65,11 @@ h1 {
 .error-text {
 	color: white;
 	background-color: red;
+}
+
+.success-text {
+	color: green;
+	background-color: inherit;
 }
 
 header {
@@ -224,7 +227,7 @@ header {
 
 .modalcontainer {
 	text-align: center;
-	margin: 24px 0 12px 0;
+	margin: 12px 0 12px 0;
 	position: relative;
 }
 .avatar {
@@ -285,6 +288,7 @@ header {
 	color: #000;
 	font-size: 35px;
 	font-weight: bold;
+	z-index: 2;
 }
 
 .close:hover,.close:focus {
@@ -321,6 +325,10 @@ header {
 	border-top: none;
 } 
 
+.text-in {
+	margin: 0 0 10px 0;
+}
+
 .block {
 	text-align: center;
 }
@@ -352,35 +360,36 @@ header {
 
 		function showPopup() {
 			document.getElementById('modal-wrapper').style.display='block';
-			var btn = document.getElementById("tab").children[0];
+			var btn = $(".tab").children()[0];
 			openInput({currentTarget:btn}, "Individual");
 			$(".modal").find(".text-in").val('');
 		}
 
 		function openInput(event, id) {
-			console.log("opeining " + id + "tab");
-			$(".tabcontent").hide();
+			console.log("opeining " + id + " tab");
+			$(".tabcontent").css("display", "none");
 			$(".tablinks").removeClass("active");
-			$("#"+id).show();
+			$("#"+id).css("display", "block");
 			event.currentTarget.className += " active";
 		}
 
 		function getRankString(tier, dev) {
 			return tier + " " + dev;
 		}
-		function swapPlayerView() {
-			text = $("#balance_btn").text();
-			console.log ("show listing " + text);
-			if(text == 'Back') {
-				$("#listing").show();
-				$("#balanced").hide();
-				$("#balance_btn").html('Balance!');
-			} else {
-				$("#listing").hide();
-				$("#balanced").show();
-				$("#balance_btn").html('Back');
-				balanceTeams();
-			}
+
+		function showPlayerList() {
+			$("#listing").show();
+			$("#balanced").hide();
+			$("#back_btn").hide();
+			$("#balance_btn").show();
+		}
+
+		function showBalanceGrid() {
+			$("#listing").hide();
+			$("#balanced").show();
+			$("#back_btn").show();
+			$("#balance_btn").hide();
+			balanceTeams();
 		}
 
 		function getSrcByRank(rank) {
@@ -432,6 +441,7 @@ header {
 			console.log("adding friend with name:" + inName + " rank:" + inTear );
 			friends.push({playing:false, name:inName, tear:inTear, dev:inDev});
 			sortFriendsList();
+			reportSummonerAdded(inName);
 		}
 		function sortFriendsList() {
 			friends.sort(function (a, b) {
@@ -481,18 +491,16 @@ header {
 			var countIndicator = $("#num_players");
 			var btn = $("#balance_btn");
 			if (num_players < 10) {
-				countIndicator.css('color', 'black');
-				countIndicator.text(num_players + "/10");
+				countIndicator.removeClass("error-text success-text");
 				btn.prop("disabled",true);
 			} else if (num_players > 10) {
-				countIndicator.css('color', 'red');
-				countIndicator.text(num_players + "/10");
+				countIndicator.removeClass("success-text").addClass("error-text");
 				btn.prop("disabled",true);
 			} else {
-				countIndicator.css('color', 'green');
-				countIndicator.text(num_players + "/10");
+				countIndicator.removeClass("error-text").addClass("success-text");
 				btn.prop("disabled",false);
 			}
+			countIndicator.text(num_players + "/10");
 		}
 		function incrementPlayers() {
 			num_players += 1;
@@ -621,8 +629,7 @@ header {
 				}
 				return false;
 			}, false)) {
-				reoprtSummonerNotAdded()
-				
+				reoprtSummonerNotAdded(summnerName + " is already in the friends list");
 				return false;
 			}
 			const proxyurl = "https://cors-anywhere.herokuapp.com/";
@@ -664,22 +671,30 @@ header {
 		}
 
 		function reoprtSummonerNotAdded(msg) {
-			console.log("Summner existis in friends list"); //XXX
+			console.log("Summoner existis in friends list"); //XXX
 			var element = $("#feedback");
 			var text = document.createTextNode(msg);
 			element.empty();
-			element.className = "error-text";
-			element.appendChild(text);
+			element.removeClass("success-text").addClass("error-text");
+			element.append(text);
+		}
+
+		function reportSummonerAdded(summonerName) {
+			console.log(summonerName + " has been added to the friends list");
+			var text = document.createTextNode(summonerName + " has been added to the friends list");
+			element.empty();
+			element.removeClass("error-text").addClass("success-text");
+			element.append(text);
 		}
 
 		function configure_balance_button() {
 			var btn = $("#balance_btn");
-			btn.click(swapPlayerView);
-			btn.html('Balance!');
+			btn.click(showBalanceGrid);
+			btn.html("Balance!");
 			btn.prop("disabled",true);
 
 			btn = $("#back_btn");
-			btn.click(swapPlayerView);
+			btn.click(showPlayerList);
 			btn.html("Back");
 			btn.hide();
 		}
@@ -863,28 +878,30 @@ header {
 	<div id="modal-wrapper" class="modal" style="display:none;" >
 		<form class="modal-content animate" action="javascript:void(0);">
 			<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
-			<div class="tab">
-				<button class="tablinks" onclick="openInput(event, 'Individual')"> Individual </button>
-				<button class="tablinks" onclick="openInput(event, 'Group')">Groupe</button>
-			</div> <!-- .tab -->
-			<div id="Individual" class="modalcontainer tabcontent">
-				<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
-				<h3 style="text-align:center"> Type Summoner name: </h3>
-				<form action="javascript:void(0);" id="individualSearch" onSubmit="return apiSummoner()">
-					<input id=name-box" type="text" placeholder="Summoner Name..." class="text-in"/>
-					<br/>
-					<button onclick="apiSummoner()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
-				</form>
-			</div> <!-- #Individual -->
-			<div id="Group" class="modalcontainer tabcontent">
-				<h3 style="text-align:center"> Copy-paste lobby chat: </h3>
-				<form action="javascript:void(0);" id="groupSearch" onSubmit="return apiSummoner()">
-					<textarea id="chat-box" placeholder="player Joined the game..." name="Text1" cols="60" rows="5" class="text-in"></textarea>
-					<br/>
-					<button onclick="apiSummoner()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
-				</form>
-			</div> <!-- #Group -->
-			<p id="feedback"></p>
+			<div class="modalcontainer">
+				<div class="tab">
+					<button class="tablinks" onclick="openInput(event, 'Individual')"> Individual </button>
+					<button class="tablinks" onclick="openInput(event, 'Group')">Groupe</button>
+				</div> <!-- .tab -->
+				<div id="Individual" class="tabcontent">
+					<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
+					<h3 style="text-align:center"> Type Summoner name: </h3>
+					<form action="javascript:void(0);" id="individualSearch" onSubmit="return apiSummoner()">
+						<input id="name-box" type="text" placeholder="Summoner Name..." class="text-in"/>
+						<br/>
+						<button onclick="apiSummoner()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
+					</form>
+				</div> <!-- #Individual -->
+				<div id="Group" class="tabcontent">
+					<h3 style="text-align:center"> Copy-paste lobby chat: </h3>
+					<form action="javascript:void(0);" id="groupSearch" onSubmit="return apiSummoner()">
+						<textarea id="chat-box" placeholder="player Joined the game..." name="Text1" cols="60" rows="5" class="text-in"></textarea>
+						<br/>
+						<button onclick="apiSummoner()" type="button" class="btn summoner-btn"><font size="6">Add All</font></button>
+					</form>
+				</div> <!-- #Group -->
+				<p id="feedback"></p>
+			</div> <!-- .modalcontainer -->
 		</form> <!-- .animate -->
 	</div> <!-- #modal-wrapper -->
 
@@ -914,8 +931,10 @@ header {
 			</div>
 
 		</div>
-		<button id="balance_btn" type="button" class="btn btn-success" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
-		<button id="back_btn" type="button" class="btn" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
+		<div style="text-align:center; margin-right:20vw;">
+			<button id="balance_btn" type="button" class="btn btn-success" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
+			<button id="back_btn" type="button" class="btn" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
+		</div>
 	</div>
 
 	<!-------------------- FRIENDS SIDE WINDOW ------------------------>
