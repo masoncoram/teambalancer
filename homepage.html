@@ -64,6 +64,11 @@ h1 {
 	margin-top:0px;
 }
 
+.error-text {
+	color: white;
+	background-color: red;
+}
+
 header {
 	background:#00849b;
 	margin:0px;
@@ -71,6 +76,13 @@ header {
 	padding-bottom:5px;
 }
 
+.summoner-btn {
+	background: #00aecc;
+}
+
+.summoner-btn:hover {
+	background: #009cb7;
+}
 
 /********************** Styles for the Balance Grid **************************/
 .balance-card {
@@ -86,6 +98,10 @@ header {
 /* search bar */
 #friends {
 	max-width: 20vw;
+}
+
+.friend-card span {
+	right: 10px;
 }
 
 .search-container {
@@ -201,44 +217,49 @@ header {
 
 /********************** Modal STUFF ************************************/
 /* Center the image and position the close button */
-.imgcontainer {
-    text-align: center;
-    margin: 24px 0 12px 0;
-    position: relative;
+#name-box {
+	padding: 0px;	
+	margin: 10px;
+}
+
+.modalcontainer {
+	text-align: center;
+	margin: 24px 0 12px 0;
+	position: relative;
 }
 .avatar {
-    width: 200px;
-        height:200px;
-    border-radius: 50%;
+	width: 200px;
+	height:200px;
+	border-radius: 50%;
 }
 
 /* The Modal (background) */
 .modal {
-        display:none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+	display:none;
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0,0,0,0.4);
 }
 
 /* Modal Content Box */
 .modal-content {
-    background-color: #fefefe;
-    margin: 4% auto 15% auto;
-    border: 1px solid #888;
-    width: 50%;
-    padding-left: 15px;
-    padding-right:15px;
-    padding-bottom: 30px;
+	background-color: #fefefe;
+	margin: 4% auto 15% auto;
+	border: 1px solid #888;
+	width: 50%;
+	padding-left: 15px;
+	padding-right:15px;
+	padding-bottom: 30px;
 }
 
 /* Add Zoom Animation */
 .animate {
-    animation: zoom 0.6s
+	animation: zoom 0.6s
 }
 @keyframes zoom {
     from {transform: scale(0)}
@@ -246,9 +267,9 @@ header {
 }
 
 .animate-grow {
-    animation-name: grow;
-    animation-duration: 5s;
-    animation-iteration-count: infinite;
+	animation-name: grow;
+	animation-duration: 5s;
+	animation-iteration-count: infinite;
 }
 @keyframes grow {
     0%    {transform: scale(1);}
@@ -258,12 +279,12 @@ header {
 
 /* The Close Button (x) */
 .close {
-    position: absolute;
-    right: 25px;
-    top: 0;
-    color: #000;
-    font-size: 35px;
-    font-weight: bold;
+	position: absolute;
+	right: 25px;
+	top: 0;
+	color: #000;
+	font-size: 35px;
+	font-weight: bold;
 }
 
 .close:hover,.close:focus {
@@ -271,20 +292,48 @@ header {
     cursor: pointer;
 }
 
-.block {
-    text-align: center;
+/* Tabs */
+.tab {
+	overflow: hidden;
+	border: 1px solid #ccc;
+	background-color: #f1f1f1;
+}
 
+.tab button {
+	background-color: inherit;
+	float: left;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	transition: 0.3s;
+}
+.tab button:hover {
+	background-color: #ddd;
+}
+.tab button.active {
+	background-color: #ccc;
+}
+.tabcontent {
+	display: none;
+	padding: 6px 12px;
+	border: 1px solid #ccc;
+	border-top: none;
+} 
+
+.block {
+	text-align: center;
 }
 .equalspace {
-    display: flex;
-    justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
 .item-name {
-    font-size: 1.3em;
+	font-size: 1.3em;
 }
 .addtocart {
-    font-size: 1.3em;
+	font-size: 1.3em;
 }
 
 #add-frend-button {
@@ -303,11 +352,23 @@ header {
 
 		function showPopup() {
 			document.getElementById('modal-wrapper').style.display='block';
+			var btn = document.getElementById("tab").children[0];
+			openInput({currentTarget:btn}, "Individual");
+			$(".modal").find(".text-in").val('');
 		}
 
+		function openInput(event, id) {
+			console.log("opeining " + id + "tab");
+			$(".tabcontent").hide();
+			$(".tablinks").removeClass("active");
+			$("#"+id).show();
+			event.currentTarget.className += " active";
+		}
 
-		function swapPlayerView()
-		{
+		function getRankString(tier, dev) {
+			return tier + " " + dev;
+		}
+		function swapPlayerView() {
 			text = $("#balance_btn").text();
 			console.log ("show listing " + text);
 			if(text == 'Back') {
@@ -326,21 +387,23 @@ header {
 			return '/images/' + rank + '.png';
 		}
 
-		function isEmptyOrSpaces(str){
-			    return str === null || str.match(/^ *$/) !== null;
+		function isEmptyOrSpaces(str) {
+			if (typeof str == 'undefined') return true;
+			return str === null || str.match(/^ *$/) !== null;
 		}
 		function display_friends() {
 			console.log("generating friend-list html");
 			$("#friends-list").empty();
 			var indexMap = [];
 
-			var search = $("#search-box").val().toLowerCase();
+			var search = $("#search-box").val();
 			if (isEmptyOrSpaces(search)) {
 				console.log("no search, showing all");
 				toShow = friends;
 				indexMap = Array.apply(null, {length: friends.length}).map(Number.call, Number)
 			} else {
 				console.log("filtering on search:" + search);
+				search = search.toLowerCase();
 				var toShow = friends.filter(function (el, index) {
 					if (el.name.toLowerCase().includes(search) ||
 						el.tear.toLowerCase().includes(search)) {
@@ -357,7 +420,7 @@ header {
 				toShow.forEach(function(element, index) {
 					var name = element.name;
 					var playing = element.playing;
-					var rank_str = element.tear + element.dev;
+					var rank_str = getRankString(element.tear, element.dev);
 					var rank_img_src = getSrcByRank(element.tear);
 					appendFrend(indexMap[index], name, rank_str, rank_img_src);
 				}); 
@@ -379,8 +442,7 @@ header {
 			});
 		}
 		
-		function addPlayerToList(friendIndex)
-		{
+		function addPlayerToList(friendIndex) {
 			incrementPlayers();
 
 			friends[friendIndex].playing = true;
@@ -471,7 +533,7 @@ header {
 					body.className = 'card-body';
 					{
 						var title = document.createElement("H5");
-						title.className = 'card-title';
+						title.className = 'card-title unselectable';
 						{
 							var textnode = document.createTextNode(name);
 							textnode.className = 'unselectable';
@@ -479,7 +541,7 @@ header {
 						}
 
 						var paragraph = document.createElement("P");
-						paragraph.className = 'card-text';
+						paragraph.className = 'card-text unselectable';
 						{
 							var textnode = document.createTextNode(rank_str);
 							textnode.className = 'unselectable';
@@ -544,9 +606,7 @@ header {
 				}
 				item.appendChild(card);
 			}
-
-			var list = document.getElementById("friends-list");
-			list.appendChild(item);
+			$("#friends-list").append(item);
 		}
 		function showAddCard() {
 			console.log("addCard");
@@ -554,7 +614,17 @@ header {
 
 		function apiSummoner() {
 			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
-			var summnerName = $("#name-box").val()
+			var summnerName = $("#name-box").val().toLowerCase();
+			if (friends.reduce(function (acumulator, currentValue) {
+				if (acumulator || currentValue.name.toLowerCase() == summnerName) {
+					return true;
+				}
+				return false;
+			}, false)) {
+				reoprtSummonerNotAdded()
+				
+				return false;
+			}
 			const proxyurl = "https://cors-anywhere.herokuapp.com/";
 			const url = encodeURI("https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/" + summnerName + "?api_key=");
 			console.log("fetching id for " + summnerName)
@@ -590,6 +660,16 @@ header {
 					}
 				});
 			});
+			return false;
+		}
+
+		function reoprtSummonerNotAdded(msg) {
+			console.log("Summner existis in friends list"); //XXX
+			var element = $("#feedback");
+			var text = document.createTextNode(msg);
+			element.empty();
+			element.className = "error-text";
+			element.appendChild(text);
 		}
 
 		function configure_balance_button() {
@@ -619,17 +699,17 @@ header {
 					var body = document.createElement("DEV");
 					body.className = 'card-body';
 					{
-						var title = document.createElement("H5");
-						title.className = 'card-title';
+						var title = document.createElement("P");
+						title.className = 'card-title unselectable';
 						{
 							var textnode = document.createTextNode(player.name);
 							title.appendChild(textnode);
 						}
 
-						var paragraph = document.createElement("P");
-						paragraph.className = 'card-text';
+						var paragraph = document.createElement("H5");
+						paragraph.className = 'card-text unselectable';
 						{
-							var textnode = document.createTextNode(player.tear + " " + player.dev);
+							var textnode = document.createTextNode(getRankString(player.tear, player.dev));
 							paragraph.appendChild(textnode);
 						}
 						body.appendChild(title)
@@ -771,8 +851,6 @@ header {
    			}
     		return a;
 		}
-
-		
 	</script>
 
 </head>
@@ -781,41 +859,37 @@ header {
 	<h1 style="margin-left:2vw">LoL Balance</h1>
 </header>
 <body>
-
-  
-	<!-------------------------- POPUP -------------------------->
+	<!-------------------------- POP-UP -------------------------->
 	<div id="modal-wrapper" class="modal" style="display:none;" >
-		<form class="modal-content animate" action="/cart/">
+		<form class="modal-content animate" action="javascript:void(0);">
+			<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
+			<div class="tab">
+				<button class="tablinks" onclick="openInput(event, 'Individual')"> Individual </button>
+				<button class="tablinks" onclick="openInput(event, 'Group')">Groupe</button>
+			</div> <!-- .tab -->
+			<div id="Individual" class="modalcontainer tabcontent">
+				<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
+				<h3 style="text-align:center"> Type Summoner name: </h3>
+				<form action="javascript:void(0);" id="individualSearch" onSubmit="return apiSummoner()">
+					<input id=name-box" type="text" placeholder="Summoner Name..." class="text-in"/>
+					<br/>
+					<button onclick="apiSummoner()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
+				</form>
+			</div> <!-- #Individual -->
+			<div id="Group" class="modalcontainer tabcontent">
+				<h3 style="text-align:center"> Copy-paste lobby chat: </h3>
+				<form action="javascript:void(0);" id="groupSearch" onSubmit="return apiSummoner()">
+					<textarea id="chat-box" placeholder="player Joined the game..." name="Text1" cols="60" rows="5" class="text-in"></textarea>
+					<br/>
+					<button onclick="apiSummoner()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
+				</form>
+			</div> <!-- #Group -->
+			<p id="feedback"></p>
+		</form> <!-- .animate -->
+	</div> <!-- #modal-wrapper -->
 
-			<div class="imgcontainer">
-				<span
-					onclick="document.getElementById('modal-wrapper').style.display='none'"
-					class="close" title="Close PopUp">&times;</span>
-				<img src="images/add_friend-512.png" alt="Avatar" class="avatar">
-				<h1 style="text-align:center">
-					Type Summoner name or copy-paste lobby chat:
-				</h1>
-			<form action=""id="search" onSubmit="return apiSummoner()">
-				<input type="text" placeholder="Summoner Name..." id="name-box">
-			<div></div>
-			<input type="submit" class="btn btn-info" value="Add Summoner">
-			<!--<input type="submit" class="btn btn-info" value="Add Summoner"><font size="6">Add Summoner</font></input>-->
-			<button onclick="apiSummoner()" type="button" class="btn btn-info"><font size="6">Add Summoner</font></button>
-			</form>
-		</div>
-	
-      <div class="equalspace">
-        <div></div>
-        <button onclick="findSummoner()" type="button" class="btn btn-info"><font size="6">Add Summoner</font></button>
-        <!-- <button type="submit" class="btn btn-success"><font size="6">Checkout</font></button> -->
-		<div></div>
-      </div>
-    </form>
-  </div>
 
-
-  
-  <!---------------------- MAIN DISPLAY ARIEA ------------------>
+	<!---------------------- MAIN DISPLAY ARIEA ------------------>
 	<div>
 		<div class="jumbotron">
 			<div id="listing" class="balance" style="">
