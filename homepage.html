@@ -227,7 +227,7 @@ header {
 
 .modalcontainer {
 	text-align: center;
-	margin: 12px 0 12px 0;
+	margin: 40px 0 12px 0;
 	position: relative;
 }
 .avatar {
@@ -283,7 +283,7 @@ header {
 /* The Close Button (x) */
 .close {
 	position: absolute;
-	right: 25px;
+	right: 20px;
 	top: 0;
 	color: #000;
 	font-size: 35px;
@@ -623,10 +623,75 @@ header {
 		function showAddCard() {
 			console.log("addCard");
 		}
-
-		function apiSummoner() {
-			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
+		
+		/*
+X0098 joined the lobby
+Weíss Schnee joined the lobby
+TommyMcBumbusta joined the lobby
+Shallahallamalo joined the lobby
+X Blade 18 joined the lobby
+Sushi Machine joined the lobby
+Soup1 joined the lobby
+TNS DDushi joined the lobby
+US Economy joined the lobby
+TNS DDushi left the lobby
+US Economy
+ADV
+:  hello
+		*/
+		function apiSummonerGroup() {
+			var chatTextLines = $("#chat-box").val().toLowerCase().split('\n');
+			console.log("Chat Text: " + chatTextLines);
+			console.log("line num: " + chatTextLines.length);
+			var line;
+			var names = [];
+			var nonames = [];
+			var addname = true;
+			var endIndex;
+			var summName;
+			for(var i = chatTextLines.length - 1; i >= 0; i--) {
+				line = chatTextLines[i];
+				console.log("line: " + line);
+				addname = true;
+				endIndex = line.search("left the lobby");
+				if (endIndex != -1) {
+					if (!line.includes(":")) {
+						summName = line.substring(0, endIndex);
+						nonames.push(summName);
+						console.log("found noname: " + summName);
+					}
+				}
+				endIndex = line.search("joined the lobby");
+				if (endIndex != -1) {
+					if (!line.includes(":")) {
+						summName = line.substring(0, endIndex);
+						console.log("found summName: " + summName);
+						for(var j = 0; j < nonames.length; j++) {
+							if (nonames[j].includes(summName)) {
+								addname = false;
+							}
+						}
+						if (addname) {
+							console.log("adding summoner: " + summName);
+							names.push(summName);
+						}
+					}
+				}
+				
+			}
+			
+			for(var x = 0; x < names.length; x++) {
+				apiSummoner(names[x]);
+			}
+		}
+		
+		function passNameToAPI() {
 			var summnerName = $("#name-box").val().toLowerCase();
+			return apiSummoner(summnerName);
+		}
+
+		function apiSummoner(summnerName) {
+			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
 			if (friends.reduce(function (acumulator, currentValue) {
 				if (acumulator || currentValue.name.toLowerCase() == summnerName) {
 					return true;
@@ -893,18 +958,18 @@ header {
 				<div id="Individual" class="tabcontent">
 					<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
 					<h3 style="text-align:center"> Type Summoner name: </h3>
-					<form action="javascript:void(0);" id="individualSearch" onSubmit="return apiSummoner()">
+					<form action="javascript:void(0);" id="individualSearch" onSubmit="return passNameToAPI()">
 						<input id="name-box" type="text" placeholder="Summoner Name..." class="text-in"/>
 						<br/>
-						<button onclick="apiSummoner()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
+						<button onclick="passNameToAPI()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
 					</form>
 				</div> <!-- #Individual -->
 				<div id="Group" class="tabcontent">
 					<h3 style="text-align:center"> Copy-paste lobby chat: </h3>
-					<form action="javascript:void(0);" id="groupSearch" onSubmit="return apiSummoner()">
-						<textarea id="chat-box" placeholder="player Joined the game..." name="Text1" cols="60" rows="5" class="text-in"></textarea>
+					<form action="javascript:void(0);" id="groupSearch" onSubmit="return apiSummonerGroup()">
+						<textarea id="chat-box" placeholder="Player joined the lobby ..." name="Text1" cols="60" rows="5" class="text-in"></textarea>
 						<br/>
-						<button onclick="apiSummoner()" type="button" class="btn summoner-btn"><font size="6">Add All</font></button>
+						<button onclick="apiSummonerGroup()" type="button" class="btn summoner-btn"><font size="6">Add All</font></button>
 					</form>
 				</div> <!-- #Group -->
 				<p id="feedback"></p>
