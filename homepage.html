@@ -303,6 +303,10 @@ header {
 	background-color: #f1f1f1;
 }
 
+.tablinks {
+	width: 50%;
+}
+
 .tab button {
 	background-color: inherit;
 	float: left;
@@ -629,7 +633,7 @@ header {
 				}
 				return false;
 			}, false)) {
-				reoprtSummonerNotAdded(summnerName + " is already in the friends list");
+				reportSummonerNotAdded(summnerName + " is already in the friends list");
 				return false;
 			}
 			const proxyurl = "https://cors-anywhere.herokuapp.com/";
@@ -640,6 +644,8 @@ header {
 				//data is the JSON string
 				var summID = data.id;
 				console.log("summonerID: " + summID);
+				var actualName = data.name;
+				console.log("actual name: " + actualName);
 				const proxyurl2 = "https://cors-anywhere.herokuapp.com/";
 				const url2 = 'https://na1.api.riotgames.com/lol/league/v3/positions/by-summoner/' + summID + '?api_key=';
 				$.getJSON(proxyurl2 + url2 + apikey,
@@ -654,7 +660,7 @@ header {
 							var div = el.rank;
 							ranked = true;
 							console.log("Rank is " + tier + " " + div);
-							addToFriendsList(summnerName, tier, div);
+							addToFriendsList(actualName, tier, div);
 							display_friends();
 						}
 					});
@@ -662,7 +668,7 @@ header {
 						var tier = "UNRANKED";
 						var div = 1;
 						console.log("Unranked in Solo");
-						addToFriendsList(summnerName, tier, div);
+						addToFriendsList(actualName, tier, div);
 						display_friends();
 					}
 				});
@@ -670,7 +676,7 @@ header {
 			return false;
 		}
 
-		function reoprtSummonerNotAdded(msg) {
+		function reportSummonerNotAdded(msg) {
 			console.log("Summoner existis in friends list"); //XXX
 			var element = $("#feedback");
 			var text = document.createTextNode(msg);
@@ -681,6 +687,7 @@ header {
 
 		function reportSummonerAdded(summonerName) {
 			console.log(summonerName + " has been added to the friends list");
+			var element = $("#feedback");
 			var text = document.createTextNode(summonerName + " has been added to the friends list");
 			element.empty();
 			element.removeClass("error-text").addClass("success-text");
@@ -881,7 +888,7 @@ header {
 			<div class="modalcontainer">
 				<div class="tab">
 					<button class="tablinks" onclick="openInput(event, 'Individual')"> Individual </button>
-					<button class="tablinks" onclick="openInput(event, 'Group')">Groupe</button>
+					<button class="tablinks" onclick="openInput(event, 'Group')"> Group </button>
 				</div> <!-- .tab -->
 				<div id="Individual" class="tabcontent">
 					<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
