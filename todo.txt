@@ -1,0 +1,22 @@
+FEATURES:
+make a way to link 2-4 players on same team
+make a way to keep 2 and only 2 players on different teams
+
+POP-UP:
+DONE: Clear the text input for new summoners on start up
+DONE: Remove the person icon from the pop-up
+DONE: Generally make it smaller
+DONE: Tabs for lobby chat and individual
+DONE: -group and single
+DONE: -indicate adding a player
+-auto blank input fields
+Click off to close pop-up
+
+
+BALANCE PANEL:
+DONE: when <10/10 big red box
+DONE: Center the balance button
+Include a next iteration
+
+FRIENDS:
+sort by ranks (maybe)
