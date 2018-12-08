@@ -31,5 +31,5 @@ when adding a friend to activeplayers, animate arrow pointing to make adding obv
 
 MISCELLANEOUS:
 Website ICON
-Music
+Change Fonts
 Sound Effects
