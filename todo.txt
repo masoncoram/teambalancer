@@ -1,7 +1,7 @@
 FEATURES:
 make a way to link 2-4 players on same team
 make a way to keep 2 and only 2 players on different teams
-changing ranks temporarily
+changing ranks temporarily. Display rank with up and down arrows.
 
 
 POP-UP:
@@ -19,7 +19,7 @@ BALANCE PANEL:
 DONE: when <10/10 big red box
 DONE: Center the balance button
 Include a next iteration
-Click on active players to remove (or make an 'x')
+DONE: Click on active players to remove (or make an 'x')
 DONE: PROFILE ICON
 
 
@@ -29,3 +29,7 @@ DONE: add player button needs to be more obvious, attention-grabbing. Perhaps ad
 DONE: put search entry value into add friend text box
 when adding a friend to activeplayers, animate arrow pointing to make adding obvious
 
+MISCELLANEOUS:
+Website ICON
+Music
+Sound Effects
