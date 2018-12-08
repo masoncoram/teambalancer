@@ -11,8 +11,8 @@ DONE: Generally make it smaller
 DONE: Tabs for lobby chat and individual
 DONE: -group and single
 DONE: -indicate adding a player
--auto blank input fields
-Click off to close pop-up
+DONE: -auto blank input fields
+DONE: Click off to close pop-up
 
 
 BALANCE PANEL:
@@ -20,11 +20,12 @@ DONE: when <10/10 big red box
 DONE: Center the balance button
 Include a next iteration
 Click on active players to remove (or make an 'x')
+DONE: PROFILE ICON
 
 
 FRIENDS:
 sort by ranks (maybe)
-add player button needs to be more obvious, attention-grabbing. Perhaps adding "ADD" to the button.
-put search entry value into add friend text box
+DONE: add player button needs to be more obvious, attention-grabbing. Perhaps adding "ADD" to the button.
+DONE: put search entry value into add friend text box
 when adding a friend to activeplayers, animate arrow pointing to make adding obvious
 

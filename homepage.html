@@ -24,6 +24,7 @@
  *  <color name="colorPrimaryTint">#16c8c8</color>
  *  <color name="colorPrimaryTint2">#00dfee</color>
  *  <color name="colorAccent">#f2d300</color>
+ *  <color name="colorAccentDark">#dbbe00</color>
  *
  */
 
@@ -48,6 +49,8 @@ ul {
 	margin-bottom:10px;
 	padding-left:10px;
 	border: 1px solid #aaa;
+	font-size: 20pt;
+	height: 5vh;
 }
 
 .jumbotron {
@@ -56,6 +59,17 @@ ul {
 	padding: 16px;
 	height: 80vh;
 	overflow: scroll;
+}
+.jumbotron p {
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.jumbotron h5 {
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 15px;
 }
 
 h1 {
@@ -97,10 +111,28 @@ header {
 	border-radius: 8px;
 }
 
+.profile-icon {
+	max-width:100%;
+	max-height:100%;
+	padding-top: 4px;
+	padding-left: 4px;
+	padding-right: 15px;
+	padding-bottom: 4px;
+}
+
+.balance-img-right {
+    position: absolute;
+    right: 50px;
+    padding-right:0px;
+    max-height: 100%;
+    float: right;
+}
+
+
 /********************** Styles for the Friends List **************************/
 /* search bar */
 #friends {
-	max-width: 20vw;
+	max-width: 22vw;
 }
 
 .friend-card span {
@@ -197,7 +229,7 @@ header {
 
 .card-img-right {
 	position: absolute;
-	right: 50px;
+	right: 40px;
 	padding-right:0px;
 	max-width: 5vw;
 	float: right;
@@ -223,6 +255,9 @@ header {
 #name-box {
 	padding: 0px;	
 	margin: 10px;
+}
+#chat-box {
+	resize:vertical;
 }
 
 .modalcontainer {
@@ -348,12 +383,19 @@ header {
 	font-size: 1.3em;
 }
 
-#add-frend-button {
+#add-friend-button {
 	max-width: 35px;
 	max-height: 35px;
+	margin-right: 0px;
 	margin-left: 20px;
 	width:55px;
 	height:35px;
+	background: url("images/add_friend_gold2-512.png") no-repeat;
+	display: inline-block;
+}
+#add-friend-button:hover {
+	background: url("images/add_friend_gold2dark-512.png") no-repeat;
+	cursor: pointer;
 }
 
 	</style>
@@ -366,7 +408,10 @@ header {
 			document.getElementById('modal-wrapper').style.display='block';
 			var btn = $(".tab").children()[0];
 			openInput({currentTarget:btn}, "Individual");
+			var searchText = $("#search-box").val();
 			$(".modal").find(".text-in").val('');
+			$(".modal").find("#name-box").val(searchText);
+			$(".modal").find("#chat-box").val('');
 		}
 
 		function openInput(event, id) {
@@ -454,8 +499,24 @@ header {
 				}
 				return 1;
 			});
+			
 		}
-		
+		function printFriends() {
+			console.log("Printing Friends:");
+			for (var i=0; i<friends.length; i++) {
+				console.log("Friend[" + i + "]: "+ friends[i].name);
+			}
+		}
+
+		jQuery.expr[':'].icontains = function(a, i, m) {
+			return jQuery(a).text().toUpperCase()
+				.indexOf(m[3].toUpperCase()) >= 0;
+		};
+
+		function addToActivePlayers(summonerName) {
+			$(".friend-card:icontains('"+summonerName+"')").trigger("click");
+			console.log("summonerName:" + summonerName);
+		}
 		function addPlayerToList(friendIndex) {
 			incrementPlayers();
 
@@ -489,6 +550,14 @@ header {
 
 			configure_balance_button();
 			display_friends(friends);
+
+			var modal = document.getElementById('modal-wrapper');
+        	window.onclick = function(event) {
+            	if (event.target == modal) {
+                	modal.style.display = "none";
+            	}
+        	}
+
 		}); // end document.ready 
 
 		function printPlayerNum() {
@@ -523,8 +592,15 @@ header {
 			decrementPlayers();
 		}
 		function appendPlayer(player) {
+			var image = document.createElement("IMG");
+			image.className = 'profile-icon';
+			var name = encodeURI(player.name);
+			//var newsrc = encodeURI("http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/" + player.profileID + ".png");
+			image.src = encodeURI("http://avatar.leagueoflegends.com/na/" + name  + ".png");
+			
 			var node = document.createElement("LI");
 			var textnode = document.createTextNode(player.name);
+			node.appendChild(image);
 			node.appendChild(textnode);
 			document.getElementById("waiting-list").appendChild(node);
 		}
@@ -544,7 +620,7 @@ header {
 					var body = document.createElement("DEV");
 					body.className = 'card-body';
 					{
-						var title = document.createElement("H5");
+						var title = document.createElement("H4");
 						title.className = 'card-title unselectable';
 						{
 							var textnode = document.createTextNode(name);
@@ -564,7 +640,7 @@ header {
 					}
 
 					var image = document.createElement("IMG");
-					image.className = 'card-img-right'
+					image.className = 'card-img-right';
 					image.src = rank_img_src;
 
 					var span = document.createElement("SPAN");
@@ -597,7 +673,6 @@ header {
 						function cardFunc(e) {
 							if (e.target.tagName.toLowerCase() == "span"){return;}
 							if (friends[index].playing) {
-								console.log(friends[index].name + " is already selected.");
 								removePlayer(friends[index].name);
 								item.className = 'up';
 							} else {
@@ -653,7 +728,7 @@ ADV
 				line = chatTextLines[i];
 				console.log("line: " + line);
 				addname = true;
-				endIndex = line.search("left the lobby");
+				endIndex = line.search(" left the lobby");
 				if (endIndex != -1) {
 					if (!line.includes(":")) {
 						summName = line.substring(0, endIndex);
@@ -661,7 +736,7 @@ ADV
 						console.log("found noname: " + summName);
 					}
 				}
-				endIndex = line.search("joined the lobby");
+				endIndex = line.search(" joined the lobby");
 				if (endIndex != -1) {
 					if (!line.includes(":")) {
 						summName = line.substring(0, endIndex);
@@ -681,24 +756,32 @@ ADV
 			}
 			
 			for(var x = 0; x < names.length; x++) {
-				apiSummoner(names[x]);
+				apiSummoner(names[x], true);
 			}
 		}
 		
 		function passNameToAPI() {
-			var summnerName = $("#name-box").val().toLowerCase();
-			return apiSummoner(summnerName);
+			var summnerName = $("#name-box").val();
+			return apiSummoner(summnerName, false);
 		}
 
-		function apiSummoner(summnerName) {
+		function apiSummoner(summnerName, addToActive) {
 			var apikey = "RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a"
+			console.log("summtolower: " + summnerName.toLowerCase());
 			if (friends.reduce(function (acumulator, currentValue) {
-				if (acumulator || currentValue.name.toLowerCase() == summnerName) {
+				if (acumulator || currentValue.name.toLowerCase() === summnerName.toLowerCase()) {
 					return true;
 				}
+				console.log("accumulator: " + acumulator);
+                console.log("currentValue: " + currentValue.name.toLowerCase());
+				console.log("summtolowerr: " + summnerName.toLowerCase());
 				return false;
 			}, false)) {
 				reportSummonerNotAdded(summnerName + " is already in the friends list");
+				if (addToActive) { 
+					addToActivePlayers(summnerName);
+                }
+
 				return false;
 			}
 			const proxyurl = "https://cors-anywhere.herokuapp.com/";
@@ -710,6 +793,9 @@ ADV
 				var summID = data.id;
 				console.log("summonerID: " + summID);
 				var actualName = data.name;
+				if (actualName.substring(0,1) === " ") {
+					actualName = actualName.substring(1,actualName.length);
+				}
 				console.log("actual name: " + actualName);
 				const proxyurl2 = "https://cors-anywhere.herokuapp.com/";
 				const url2 = 'https://na1.api.riotgames.com/lol/league/v3/positions/by-summoner/' + summID + '?api_key=';
@@ -719,7 +805,7 @@ ADV
 					var ranked = false;
 					console.log("parsing second response:");
 					data2.forEach(function(el) {
-						console.log(el.queueType);
+						//console.log(el.queueType);
 						if (el.queueType == "RANKED_SOLO_5x5") {
 							var tier = el.tier;
 							var div = el.rank;
@@ -727,6 +813,9 @@ ADV
 							console.log("Rank is " + tier + " " + div);
 							addToFriendsList(actualName, tier, div);
 							display_friends();
+							if (addToActive) {
+								addToActivePlayers(actualName);
+							}
 						}
 					});
 					if (!ranked) {
@@ -735,6 +824,9 @@ ADV
 						console.log("Unranked in Solo");
 						addToFriendsList(actualName, tier, div);
 						display_friends();
+						if (addToActive) {
+                        	addToActivePlayers(actualName);
+                        }
 					}
 				});
 			});
@@ -742,7 +834,7 @@ ADV
 		}
 
 		function reportSummonerNotAdded(msg) {
-			console.log("Summoner existis in friends list"); //XXX
+			console.log("Summoner exists in friends list"); //XXX
 			var element = $("#feedback");
 			var text = document.createTextNode(msg);
 			element.empty();
@@ -781,7 +873,7 @@ ADV
 			item.className = 'down';
 			{
 				var card = document.createElement("DEV");			  // Create a dev
-				card.className = 'flex-container balance-card'
+				card.className = 'flex-container balance-card';
 				{
 					var body = document.createElement("DEV");
 					body.className = 'card-body';
@@ -804,7 +896,7 @@ ADV
 					}
 
 					var image = document.createElement("IMG");
-					image.className = 'card-img-right'
+					image.className = 'balance-img-right';
 					image.src = getSrcByRank(player.tear);
 
 					card.appendChild(body);
@@ -959,7 +1051,7 @@ ADV
 					<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
 					<h3 style="text-align:center"> Type Summoner name: </h3>
 					<form action="javascript:void(0);" id="individualSearch" onSubmit="return passNameToAPI()">
-						<input id="name-box" type="text" placeholder="Summoner Name..." class="text-in"/>
+						<input id="name-box" type="text" size="30" placeholder="Summoner Name..." class="text-in"/>
 						<br/>
 						<button onclick="passNameToAPI()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
 					</form>
@@ -1017,8 +1109,11 @@ ADV
 				onkeyup="this.onchange();" onpaste="this.onchange();"
 				oninput="this.onchange();" type="text" placeholder="Search..."/>
 			</form>
-			<input id="add-frend-button" type="image" src="images/add_friend-512.png"
-			onclick="showPopup()">
+			<!-- <input id="add-friend-button" type="image" onclick="showPopup()"> -->
+			<img id="add-friend-button" src="images/add_friend_gold2-512.png" 
+                onmouseover="this.src='images/add_friend_gold2dark-512.png'" 
+                onmouseout="this.src='images/add_friend_gold2-512.png'"
+                onclick="showPopup()">
 		</div>
 		<ul id="friends-list">
 			<li>
