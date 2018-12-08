@@ -33,3 +33,4 @@ MISCELLANEOUS:
 Website ICON
 Change Fonts
 Sound Effects
+Saving friends to cookies
