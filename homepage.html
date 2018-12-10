@@ -28,6 +28,10 @@
  *
  */
 
+ #header-title {
+	color: #eeeeee;
+ }
+ 
 .balance {
 	height:60vh;
 }
@@ -59,6 +63,8 @@ ul {
 	padding: 16px;
 	height: 80vh;
 	overflow: scroll;
+	overflow-y: auto;
+	overflow-x: auto;
 }
 .jumbotron p {
 	margin-top: 10px;
@@ -139,6 +145,62 @@ header {
     padding-right:0px;
     max-height: 100%;
     float: right;
+}
+
+.icon-btn {
+	cursor:default;
+	border-radius: 3px;
+	max-height: 5vh;
+	max-width: 5vw;
+	padding: 0px;
+	border: 2px solid #aaa;
+	border-radius: 8px;
+	background-color: #ffffff;
+}
+.icon-btn:hover {
+	background-color: #CCCCCC;
+}
+.icon-btn:focus {
+	outline: none;
+}
+.icon-btn-on {
+	cursor: default;
+	border-radius: 3px;
+	max-height: 5vh;
+	max-width: 5vw;
+	padding: 0px;
+	border: 2px solid #aaa;
+	border-radius: 8px;
+	background-color: #00aecc;
+}
+.icon-btn-on:hover {
+	background-color: #009cb7;
+}
+.icon-btn-on:focus {
+	outline: none;
+}
+
+.waiting-btn {
+	cursor:default;
+	border-radius: 3px;
+	padding: 0px;
+	border: 2px solid #aaa;
+	border-radius: 8px;
+	background-color: #ffffff;
+}
+.waiting-btn:hover {
+	background-color: #CCCCCC;
+}
+.waiting-btn-on {
+	cursor:default;
+	border-radius: 3px;
+	padding: 0px;
+	border: 2px solid #aaa;
+	border-radius: 8px;
+	background-color: #00aecc;
+}
+.waiting-btn-on:hover {
+	background-color: #009cb7;
 }
 
 
@@ -243,8 +305,10 @@ header {
 	position: absolute;
 	right: 40px;
 	padding-right:0px;
-	max-width: 5vw;
+	padding-top: 3px;
+	max-width: 4.0vw;
 	float: right;
+	padding-
 }
 
 
@@ -433,6 +497,122 @@ header {
 			$(".tablinks").removeClass("active");
 			$("#"+id).css("display", "block");
 			event.currentTarget.className += " active";
+		}
+		
+		var AlliesSelected = 0;
+		var RivalsSelected = 0;
+		function AddRivalOnClick() {
+						addToRivals(this);
+		};
+		function AddAllyOnClick() {
+						addToAllies(this);
+		};
+		function allyOnClick() {
+			var linkbtn = document.getElementById("link-btn");
+			if (linkbtn.classList.contains("icon-btn")) {
+				linkbtn.classList.add("icon-btn-on");
+				linkbtn.classList.remove("icon-btn");
+				AlliesSelected = 0;
+				if (document.getElementById("rival-btn").classList.contains("icon-btn-on")) {
+					rivalOnClick();
+				}
+				$("#waiting-list").children("li").each(function() {
+					var waitingBtn = this;
+					waitingBtn.classList.add("waiting-btn");
+					
+					$(this).off();
+					$(this).on("click", function() {
+						addToAllies(this);
+					});
+				});
+			}
+			else{
+				linkbtn.classList.add("icon-btn");
+				linkbtn.classList.remove("icon-btn-on");
+				$("#waiting-list").children("li").each(function() {
+					this.classList.remove("waiting-btn");
+					$(this).off();
+					if (this.classList.contains("waiting-btn-on")) {
+						this.classList.remove("waiting-btn-on");
+						//Create Allies with this element
+						
+						
+					}
+				});
+			}
+		}
+		
+		function rivalOnClick() {
+			var rivalbtn = document.getElementById("rival-btn");
+			if (rivalbtn.classList.contains("icon-btn")) {
+				rivalbtn.classList.add("icon-btn-on");
+				rivalbtn.classList.remove("icon-btn");
+				RivalsSelected = 0;
+				if (document.getElementById("link-btn").classList.contains("icon-btn-on")) {
+					allyOnClick();
+				}
+				$("#waiting-list").children("li").each(function() {
+					var waitingBtn = this;
+					waitingBtn.classList.add("waiting-btn");
+					
+					$(this).off();
+					$(this).on("click", function() {
+						addToRivals(this);
+					});
+				});
+			}
+			else{
+				rivalbtn.classList.add("icon-btn");
+				rivalbtn.classList.remove("icon-btn-on");
+				$("#waiting-list").children("li").each(function() {
+					this.classList.remove("waiting-btn");
+					$(this).off();
+					if (this.classList.contains("waiting-btn-on")) {
+						this.classList.remove("waiting-btn-on");
+						//Create Rivals with this element
+						
+						
+					}
+				});
+			}
+		}
+		
+		function addToAllies(btnElem) {
+			var waitingBtn = btnElem;
+			if (waitingBtn.classList.contains("waiting-btn-on")) {
+				waitingBtn.classList.add("waiting-btn");
+				waitingBtn.classList.remove("waiting-btn-on");
+				AlliesSelected--;
+			}
+			else if (AlliesSelected < 4) { 
+				waitingBtn.classList.add("waiting-btn-on");
+				waitingBtn.classList.remove("waiting-btn");
+				AlliesSelected++;
+				console.log("Added someone to Allies");
+			}
+			updateSelectedDisplay();
+		}
+		
+		
+		function addToRivals(btnElem) {
+			var waitingBtn = btnElem;
+			if (waitingBtn.classList.contains("waiting-btn-on")) {
+				waitingBtn.classList.add("waiting-btn");
+				waitingBtn.classList.remove("waiting-btn-on");
+				RivalsSelected--;
+			}
+			else if (RivalsSelected < 2) { 
+				waitingBtn.classList.add("waiting-btn-on");
+				waitingBtn.classList.remove("waiting-btn");
+				RivalsSelected++;
+				console.log("Added someone to Rivals");
+			}
+			updateSelectedDisplay
+			
+		}
+		
+		function updateSelectedDisplay() {
+			
 		}
 
 		function getRankString(tier, dev) {
@@ -1135,7 +1315,7 @@ ADV
 <header >
 	<div style="display:flex;">
 		<img src="images/LoLBalance.png" alt="Icon" style="max-height: 5vh; margin-left:2vw;">
-		<h1 style="margin-left:1vw; margin-top:5px; margin-bottom:5px;">LoL Balance</h1>
+		<h1 id="header-title" style="margin-left:1vw; margin-top:5px; margin-bottom:5px;">LoL Balance</h1>
 	</div>
 </header>
 <body>
@@ -1179,6 +1359,8 @@ ADV
 				<ul id="waiting-list">
 				</ul>
 			</div>
+			<input type="image" src="images/ally.png" class="icon-btn" id="link-btn" onclick="allyOnClick()" />
+			<input type="image" src="images/rival.png" class="icon-btn" id="rival-btn" onclick="rivalOnClick()" />
 
 			<div id="balanced" class="balance">
 				<div class="flex-container">
