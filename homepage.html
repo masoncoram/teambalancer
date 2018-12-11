@@ -1262,7 +1262,8 @@ ADV
 			var summnerName = $("#name-box").val();
 			console.log("Calling passNameToAPI");
 			reportSummonerFetching();
-			return apiSummoner(summnerName, false);
+			apiSummoner(summnerName, false);
+			return false;
 		}
 
 		function apiSummoner(summnerName, addToActive) {
@@ -1665,7 +1666,7 @@ ADV
 				<div id="Individual" class="tabcontent">
 					<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
 					<h3 style="text-align:center"> Type Summoner name: </h3>
-					<form action="" id="individualSearch" onSubmit="return passNameToAPI()">
+					<form action="javascript:void(0);" id="individualSearch" onSubmit="passNameToAPI(); return false;">
 						<input id="name-box" type="text" size="30" placeholder="Summoner Name..." class="text-in"/>
 						<br/>
 						<button onclick="passNameToAPI()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
