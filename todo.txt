@@ -30,7 +30,7 @@ DONE: put search entry value into add friend text box
 when adding a friend to activeplayers, animate arrow pointing to make adding obvious
 
 MISCELLANEOUS:
-Website ICON
+Website ICON, make bottom L, and make scales on the side smaller.
 Change Fonts
 Sound Effects
 Saving friends to cookies

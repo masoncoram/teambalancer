@@ -33,7 +33,10 @@
  }
  
 .balance {
-	height:60vh;
+	height:67vh;
+	overflow-y:auto;
+	margin-bottom: 3vh;
+	border: .5vh solid;
 }
 
 .unselectable {
@@ -50,8 +53,8 @@ ul {
 }
 
 #listing ul li {
-	margin-bottom:10px;
-	padding-left:10px;
+	margin-bottom: 1vh;
+	padding-left: 1vh;
 	border: 1px solid #aaa;
 	font-size: 20pt;
 	height: 5vh;
@@ -60,22 +63,32 @@ ul {
 .jumbotron {
 	margin-right: 27vw;
 	margin-left: 2vw;
+	margin-bottom: 0vh;
+	padding-bottom: 2vh;
+	padding-top: 2vh;
 	padding: 16px;
-	height: 80vh;
+	height: 93vh;
 	overflow: scroll;
 	overflow-y: auto;
 	overflow-x: auto;
 }
 .jumbotron p {
-	margin-top: 10px;
-	margin-left: 10px;
-	margin-right: 10px;
+	margin-top: 1vh;
+	margin-left: 1vh;
+	margin-right: 1vh;
+	margin-bottom: 1vh;
+	height: 3vh;
 }
 
 .jumbotron h5 {
 	margin-left: 10px;
 	margin-right: 10px;
 	margin-bottom: 15px;
+}
+
+.display {
+	position:relative;
+	height: 70vh;
 }
 
 h1 {
@@ -95,8 +108,13 @@ h1 {
 header {
 	background:#00849b;
 	margin:0px;
-	padding-top:10px;
-	padding-bottom:10px;
+	padding-top:1vh;
+	padding-bottom:1vh;
+	height: 7vh;
+}
+
+body {
+	background-color: #eee
 }
 
 .summoner-btn {
@@ -147,11 +165,25 @@ header {
     float: right;
 }
 
+#waiting-list {
+	margin-bottom: 0px;
+	padding-left: 3vw;
+	padding-right: 3vw;
+}
+
+#ally-btn {
+	left: 3vw;
+	position: absolute;
+}
+#rival-btn {
+	left: 8vw;
+	position: absolute;
+}
 .icon-btn {
 	cursor:default;
 	border-radius: 3px;
-	max-height: 5vh;
-	max-width: 5vw;
+	max-height: 7vh;
+	max-width: 7vw;
 	padding: 0px;
 	border: 2px solid #aaa;
 	border-radius: 8px;
@@ -166,8 +198,8 @@ header {
 .icon-btn-on {
 	cursor: default;
 	border-radius: 3px;
-	max-height: 5vh;
-	max-width: 5vw;
+	max-height: 7vh;
+	max-width: 7vw;
 	padding: 0px;
 	border: 2px solid #aaa;
 	border-radius: 8px;
@@ -214,16 +246,25 @@ header {
 	right: 10px;
 }
 
+input[type=text] {
+	padding: .5vh .5vw;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
 .search-container {
 	position: relative;
 	display: flex;
 	flex-direction: row;
 	overflow: hidden;
-	padding-left: 4px;
-	margin-top: 8px;
-	margin-bottom: 6px;
-	margin-right: 16px;
+	padding-left: 1vh;
+	padding-top: 1vh;
+	padding-bottom: 1vh;
+	padding-right: 1vh;
 	font-size: 12px;
+	height: 7vh;
 }
 
 #search {
@@ -238,8 +279,8 @@ header {
 .scrollable ul {
 	overflow:hidden;
 	overflow-y:scroll;
-	min-height:90vh;
-	max-height:90vh;
+	min-height:93vh;
+	max-height:93vh;
 	min-width:60%;
 }
 
@@ -251,7 +292,6 @@ header {
 }
 
 #friends-list {
-	border: 5px solid #00849b;
 	background: #333;
 	padding: 10px;
 	margin: 0px;
@@ -328,12 +368,13 @@ header {
 
 /********************** Modal STUFF ************************************/
 /* Center the image and position the close button */
-#name-box {
-	padding: 0px;	
+#name-box {	
 	margin: 10px;
 }
 #chat-box {
 	resize:vertical;
+	border-radius: 4px;
+	padding: .5vh .5vw;
 }
 
 .modalcontainer {
@@ -473,7 +514,7 @@ header {
 #add-friend-button:hover {
 	background: url("images/add_friend_gold2dark-512.png") no-repeat;
 	cursor: pointer;
-}
+height}
 
 	</style>
 
@@ -489,6 +530,8 @@ header {
 			$(".modal").find(".text-in").val('');
 			$(".modal").find("#name-box").val(searchText);
 			$(".modal").find("#chat-box").val('');
+			$(".modal").find("#name-box").focus();
+			$(".modal").find
 		}
 
 		function openInput(event, id) {
@@ -497,6 +540,7 @@ header {
 			$(".tablinks").removeClass("active");
 			$("#"+id).css("display", "block");
 			event.currentTarget.className += " active";
+			$("#feedback").empty();
 		}
 		
 		var AlliesSelected = 0;
@@ -508,10 +552,10 @@ header {
 						addToAllies(this);
 		};
 		function allyOnClick() {
-			var linkbtn = document.getElementById("link-btn");
-			if (linkbtn.classList.contains("icon-btn")) {
-				linkbtn.classList.add("icon-btn-on");
-				linkbtn.classList.remove("icon-btn");
+			var allybtn = document.getElementById("ally-btn");
+			if (allybtn.classList.contains("icon-btn")) {
+				allybtn.classList.add("icon-btn-on");
+				allybtn.classList.remove("icon-btn");
 				AlliesSelected = 0;
 				if (document.getElementById("rival-btn").classList.contains("icon-btn-on")) {
 					rivalOnClick();
@@ -527,8 +571,8 @@ header {
 				});
 			}
 			else{
-				linkbtn.classList.add("icon-btn");
-				linkbtn.classList.remove("icon-btn-on");
+				allybtn.classList.add("icon-btn");
+				allybtn.classList.remove("icon-btn-on");
 				$("#waiting-list").children("li").each(function() {
 					this.classList.remove("waiting-btn");
 					$(this).off();
@@ -548,7 +592,7 @@ header {
 				rivalbtn.classList.add("icon-btn-on");
 				rivalbtn.classList.remove("icon-btn");
 				RivalsSelected = 0;
-				if (document.getElementById("link-btn").classList.contains("icon-btn-on")) {
+				if (document.getElementById("ally-btn").classList.contains("icon-btn-on")) {
 					allyOnClick();
 				}
 				$("#waiting-list").children("li").each(function() {
@@ -624,6 +668,8 @@ header {
 			$("#balanced").hide();
 			$("#back_btn").hide();
 			$("#balance_btn").show();
+			$("#ally-btn").show();
+			$("#rival-btn").show();
 		}
 
 		function showBalanceGrid() {
@@ -631,6 +677,8 @@ header {
 			$("#balanced").show();
 			$("#back_btn").show();
 			$("#balance_btn").hide();
+			$("#ally-btn").hide();
+			$("#rival-btn").hide();
 			balanceTeams();
 		}
 
@@ -1031,6 +1079,8 @@ ADV
 		
 		function passNameToAPI() {
 			var summnerName = $("#name-box").val();
+			reportSummonerFetching();
+			console.log("Calling passNameToAPI");
 			return apiSummoner(summnerName, false);
 		}
 
@@ -1111,6 +1161,14 @@ ADV
 			return false;
 		}
 
+		function reportSummonerFetching() {
+			var element = $("#feedback");
+			var text = document.createTextNode("Fetching Summoner Data...");
+			element.empty();
+			element.removeClass("success-text error-text");
+			element.append(text);
+		}
+
 		function reportSummonerNotAdded(msg) {
 			console.log("Summoner exists in friends list: " + msg); //XXX
 			var element = $("#feedback");
@@ -1118,6 +1176,7 @@ ADV
 			element.empty();
 			element.removeClass("success-text").addClass("error-text");
 			element.append(text);
+			$("#name-box").val("");
 		}
 
 		function reportSummonerAdded(summonerName) {
@@ -1127,6 +1186,7 @@ ADV
 			element.empty();
 			element.removeClass("error-text").addClass("success-text");
 			element.append(text);
+			$("#name-box").val("");
 		}
 
 		function configure_balance_button() {
@@ -1321,7 +1381,7 @@ ADV
 <body>
 	<!-------------------------- POP-UP -------------------------->
 	<div id="modal-wrapper" class="modal" style="display:none;" >
-		<form class="modal-content animate" action="javascript:void(0);">
+		<div class="modal-content animate">
 			<span onclick="document.getElementById('modal-wrapper').style.display='none'" class="close" title="Close PopUp">&times;</span>
 			<div class="modalcontainer">
 				<div class="tab">
@@ -1331,7 +1391,7 @@ ADV
 				<div id="Individual" class="tabcontent">
 					<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
 					<h3 style="text-align:center"> Type Summoner name: </h3>
-					<form action="javascript:void(0);" id="individualSearch" onSubmit="return passNameToAPI()">
+					<form action="" id="individualSearch" onSubmit="return passNameToAPI()">
 						<input id="name-box" type="text" size="30" placeholder="Summoner Name..." class="text-in"/>
 						<br/>
 						<button onclick="passNameToAPI()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
@@ -1347,40 +1407,40 @@ ADV
 				</div> <!-- #Group -->
 				<p id="feedback"></p>
 			</div> <!-- .modalcontainer -->
-		</form> <!-- .animate -->
+		</div> <!-- .animate -->
 	</div> <!-- #modal-wrapper -->
 
 
 	<!---------------------- MAIN DISPLAY ARIEA ------------------>
 	<div>
 		<div class="jumbotron">
-			<div id="listing" class="balance" style="">
-				<p> Selected players: <span id="num_players">0/10</span></p>
-				<ul id="waiting-list">
-				</ul>
-			</div>
-			<input type="image" src="images/ally.png" class="icon-btn" id="link-btn" onclick="allyOnClick()" />
-			<input type="image" src="images/rival.png" class="icon-btn" id="rival-btn" onclick="rivalOnClick()" />
+			<div id="display-area" class="display">
+				<div id="listing" class="balance" style="">
+					<p> Selected players: <span id="num_players">0/10</span></p>
+					<ul id="waiting-list"></ul>
+				</div>
+				<input type="image" src="images/ally.png" class="icon-btn" id="ally-btn" onclick="allyOnClick()" />
+				<input type="image" src="images/rival.png" class="icon-btn" id="rival-btn" onclick="rivalOnClick()" />
 
-			<div id="balanced" class="balance">
-				<div class="flex-container">
-					<div style="width:50%; ">
-						<p>Team 1 (strength:<span id="team1Strength">0000</span>)</p>
-						<ul  id="team1">
-						</ul>
-					</div>
-					<div style="width:50%;">
-						<p>Team 2 (strength:<span id="team2Strength">0000</span>)</p>
-						<ul id="team2">
-						</ul>
+				<div id="balanced" class="balance">
+					<div class="flex-container">
+						<div style="width:50%; ">
+							<p>Team 1 (strength:<span id="team1Strength">0000</span>)</p>
+							<ul  id="team1">
+							</ul>
+						</div>
+						<div style="width:50%;">
+							<p>Team 2 (strength:<span id="team2Strength">0000</span>)</p>
+							<ul id="team2">
+							</ul>
+						</div>
 					</div>
 				</div>
-			</div>
+				<div style="text-align:center; margin-right:0vw;">
+            		<button id="balance_btn" type="button" class="btn btn-success" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
+            		<button id="back_btn" type="button" class="btn" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
+				</div>
 
-		</div>
-		<div style="text-align:center; margin-right:20vw;">
-			<button id="balance_btn" type="button" class="btn btn-success" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
-			<button id="back_btn" type="button" class="btn" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
 		</div>
 	</div>
 
