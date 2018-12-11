@@ -914,7 +914,27 @@ height}
 		}
 		
 		function removePlayerFromActive(name) {
-			$("#waiting-list").children(":contains('"+name+"')").remove();
+			//$("#waiting-list").children(":contains('"+name+"')").remove();
+			var removeElem = $("#waiting-list").children(":contains('"+name+"')");
+			console.log(removeElem);
+			console.log($(removeElem));
+			if (removeElem.find('img.ally-icon0').length !== 0) {
+				AllyGroups[0].forEach( function(playerElem, index) {
+					$(playerElem).find('img.ally-icon0').removeClass("ally-icon0");
+					$(playerElem).find('img.ally-icon').hide();
+				});
+				AllyGroups.splice(0, 1);
+			}
+			if (removeElem.find('img.rival-icon0').length !== 0) {
+				console.log(removeElem.find('img.rival-icon0'));
+				RivalGroups[0].forEach( function(playerElem, index) {
+					$(playerElem).find('img.rival-icon0').removeClass("rival-icon0");
+					$(playerElem).find('img.rival-icon').hide();
+				});
+				RivalGroups.splice(0, 1);
+			}
+			removeElem.remove();
+			
 			var player = friends.filter(entry => entry.name == name)[0];
 			if (player.playing) {
 				decrementPlayers();
@@ -923,7 +943,6 @@ height}
 		}
 
 		function removePlayer(name) {
-			//console.log("Before removing friends has size " + friends.length);
 			$("#waiting-list").children(":contains('"+name+"')").remove();
 			var player = friends.filter(entry => entry.name == name)[0];
 			if (player.playing) {
@@ -938,7 +957,6 @@ height}
 			}
 			if (index > -1) {
 				friends.splice(index, 1);
-				//console.log("Removed " + name + " and now friends has size " + friends.length);
 			}
 			else {
 				console.log("Couldn't remove player " + name + " at index " + index);
@@ -953,6 +971,20 @@ height}
 			
 			var node = document.createElement("LI");
 			node.style.position = "relative";
+			var allybtn = document.getElementById("ally-btn");
+			var rivalbtn = document.getElementById("rival-btn");
+			if (allybtn.classList.contains("icon-btn-on")) {
+				node.classList.add("waiting-btn");
+				$(node).on("click", function() {
+						addToAllies(this);
+					});
+			}
+			else if (rivalbtn.classList.contains("icon-btn-on")) {
+				node.classList.add("waiting-btn");
+				$(node).on("click", function() {
+						addToRivals(this);
+					});
+			}
 			var header = document.createElement("H2");
             header.className = 'waiting-name';
             {
@@ -1001,6 +1033,7 @@ height}
 			node.appendChild(rivalIMG);
 			node.appendChild(span);
 			document.getElementById("waiting-list").appendChild(node);
+			
 		}
 
 		function appendFriend(index, name, rank_str, rank_img_src) {
@@ -1362,9 +1395,21 @@ ADV
 			var bestTeam2MMR = 0;
 			var bestdiff = 99999;
 			var currdiff = 0;
-			for (var n=0; n<1000; n++) {
+			var rulesKept = true;
+			var group =  [];
+			var alliesMet = true;
+			var allteam1 = true;
+			var allteam2 = true;
+			var thisteam1 = false;
+			var thisteam2 = false;
+			var rivalsMet = true;
+			var summName, summName2;
+			for (var n=0; n<10000; n++) {
 				var team1MMR = 0;
 				var team2MMR = 0;
+				rulesKept = true;
+				alliesMet = true;
+				rivalsMet = true;
 				activePlayers = shuffle(activePlayers);
 				var team1List = [];
 				var team2List = [];
@@ -1383,21 +1428,83 @@ ADV
             	    team2MMR += getMMR(team2List[z]);
             	}
             	currdiff = (team1MMR > team2MMR) ? team1MMR - team2MMR : team2MMR - team1MMR;
-            	if (currdiff < bestdiff) {
+				
+				/* Check Ally Rules  */
+				for(var a=0; a<AllyGroups.length; a++) {
+					group = AllyGroups[a];
+					allteam1 = true;
+					allteam2 = true;
+					for (var p=0; p<group.length; p++) {
+						summName = $(group[p]).find("h2").text();
+						thisteam1 = false;
+						thisteam2 = false;
+						for (var q=0; q<team1List.length; q++) {
+							if (team1List[q].name === summName) {
+								thisteam1 = true;
+							}
+						}
+						for (var q=0; q<team2List.length; q++) {
+							if (team2List[q].name === summName) {
+								thisteam2 = true;
+							}
+						}
+						if (!thisteam1) {
+							allteam1 = false;
+						}
+						if (!thisteam2) {
+							allteam2 = false;
+						}
+					}
+					if (!allteam1 && !allteam2) {
+						alliesMet = false;
+					}
+				}
+				
+				/* Check Rival Rules  */
+				for (var r=0; r<RivalGroups.length; r++) {
+					group = RivalGroups[r];
+					/* Make sure both teams dont have all rivals */
+					summName = $(group[0]).find("h2").text();
+					summName2 = $(group[1]).find("h2").text();
+					allteam1 = true;
+					allteam2 = true;
+					for (var q=0; q<team1List.length; q++) {
+						if (team1List[q].name === summName || team1List[q].name === summName2) {
+							allteam2 = false;
+						}
+					}
+					for (var q=0; q<team2List.length; q++) {
+						if (team2List[q].name === summName || team2List[q].name === summName2) {
+							allteam1 = false;
+						}
+					}
+					if (allteam1 || allteam2) {
+						rivalsMet = false;
+					}	
+					
+				}
+				
+				//Final Verdict
+				rulesKept = alliesMet && rivalsMet;
+				
+            	if (currdiff < bestdiff && rulesKept) {
                 	bestdiff = currdiff;
                 	bestTeam1 = team1List;
                 	bestTeam2 = team2List;
 					bestTeam1MMR = team1MMR;
 					bestTeam2MMR = team2MMR;
+					console.log(bestTeam1);
+					console.log(bestTeam2);
+					console.log(bestdiff);
                 	//PrintToSortedTeam(team1View, bestTeam1);
                 	//PrintToSortedTeam(team2View, bestTeam2);
                 	//team1Strength.setText((getString(R.string.strength) + " " + team1MMR));
                 	//team2Strength.setText((getString(R.string.strength) + " " + team2MMR));
             	}
 			}
-			//bestTeam1 and bestTeam2 are ready for deployment!
-			console.log("Team 1 (" + bestTeam1MMR + ") : " + bestTeam1);
-			console.log("Team 2 (" + bestTeam2MMR + ") : " + bestTeam2);
+			/* bestTeam1 and bestTeam2 are ready for deployment! */
+			//console.log("Team 1 (" + bestTeam1MMR + ") : " + bestTeam1);
+			//console.log("Team 2 (" + bestTeam2MMR + ") : " + bestTeam2);
 			show_teams(bestTeam1MMR, bestTeam1, bestTeam2MMR, bestTeam2);
 		}
 
@@ -1409,37 +1516,40 @@ ADV
 			var div = player.dev;
 			switch(div) {
 				case "I":
-                    rankOrdinal += 4;
-                    break;
-				case "II":
                     rankOrdinal += 3;
                     break;
-                case "III":
+				case "II":
                     rankOrdinal += 2;
                     break;
-                case "IV":
+                case "III":
                     rankOrdinal += 1;
                     break;
 			}
 			switch(rank) {
-				case "BRONZE":
+				case "IRON":
 					rankOrdinal += 1;
 					break;
+				case "BRONZE":
+					rankOrdinal += 5;
+					break;
 				case "SILVER":
-					rankOrdinal += 6;
+					rankOrdinal += 9;
 					break;
 				case "GOLD":
-                    rankOrdinal += 11;
+                    rankOrdinal += 13;
                     break;
 				case "PLATINUM":
-                    rankOrdinal += 16;
+                    rankOrdinal += 17;
                     break;
 				case "DIAMOND":
                     rankOrdinal += 21;
                     break;
 				case "MASTER":
-                    rankOrdinal = 26;
+                    rankOrdinal = 25;
                     break;
+				case "GRANDMASTER":
+					rankOrdinal = 26;
+					break;
 				case "CHALLENGER":
                     rankOrdinal = 27;
                     break;
