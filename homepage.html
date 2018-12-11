@@ -58,6 +58,8 @@ ul {
 	border: 1px solid #aaa;
 	font-size: 20pt;
 	height: 5vh;
+	display: flex;
+	flex-direction: row;
 }
 
 .jumbotron {
@@ -93,6 +95,10 @@ ul {
 
 h1 {
 	margin-top:0px;
+}
+
+h2 {
+	margin: auto 0px;
 }
 
 .error-text {
@@ -155,6 +161,43 @@ body {
 	padding-left: 4px;
 	padding-right: 15px;
 	padding-bottom: 4px;
+	object-fit: contain;
+}
+
+.ally-icon0 {
+	filter: sepia() saturate(10000%) hue-rotate(250deg);
+}
+.ally-icon1 {
+    filter: sepia() saturate(10000%) hue-rotate(300deg);
+}
+.ally-icon2 {
+    filter: sepia() saturate(10000%) hue-rotate(180deg);
+}
+.ally-icon3 {
+    filter: sepia() saturate(10000%) hue-rotate(170deg);
+}
+.ally-icon4 {
+    filter: sepia() saturate(10000%) hue-rotate(60deg);
+}
+.rival-icon0 {
+    filter: sepia() saturate(10000%) hue-rotate(250deg);
+}
+.rival-icon1 {
+    filter: sepia() saturate(10000%) hue-rotate(300deg);
+}
+.rival-icon2 {
+    filter: sepia() saturate(10000%) hue-rotate(180deg);
+}
+.rival-icon3 {
+    filter: sepia() saturate(10000%) hue-rotate(170deg);
+}
+.rival-icon4 {
+    filter: sepia() saturate(10000%) hue-rotate(60deg);
+}
+
+
+.waiting-name {
+	min-width: 40%;
 }
 
 .balance-img-right {
@@ -545,6 +588,8 @@ height}
 		
 		var AlliesSelected = 0;
 		var RivalsSelected = 0;
+		var AllyGroups = [];
+		var RivalGroups = [];
 		function AddRivalOnClick() {
 						addToRivals(this);
 		};
@@ -573,16 +618,27 @@ height}
 			else{
 				allybtn.classList.add("icon-btn");
 				allybtn.classList.remove("icon-btn-on");
-				$("#waiting-list").children("li").each(function() {
-					this.classList.remove("waiting-btn");
-					$(this).off();
-					if (this.classList.contains("waiting-btn-on")) {
-						this.classList.remove("waiting-btn-on");
+				var allyGroup = [];
+				$("#waiting-list").children("li").each(function(index, elem) {
+					elem.classList.remove("waiting-btn");
+					$(elem).off();
+					if (elem.classList.contains("waiting-btn-on")) {
+						elem.classList.remove("waiting-btn-on");
 						//Create Allies with this element
-						
+						allyGroup.push(elem);
 						
 					}
 				});
+				if (allyGroup.length > 1 && AllyGroups.length < 1) {
+					var groupIndex = AllyGroups.push(allyGroup) - 1;
+					console.log("groupindex: " + groupIndex);
+					allyGroup.forEach(function(elem, playerIndex) {
+						var icon = $(elem).find(".ally-icon");
+						icon.show();
+						icon.addClass("ally-icon" + groupIndex);
+					});
+				}
+
 			}
 		}
 		
@@ -608,16 +664,25 @@ height}
 			else{
 				rivalbtn.classList.add("icon-btn");
 				rivalbtn.classList.remove("icon-btn-on");
-				$("#waiting-list").children("li").each(function() {
-					this.classList.remove("waiting-btn");
-					$(this).off();
-					if (this.classList.contains("waiting-btn-on")) {
-						this.classList.remove("waiting-btn-on");
+				var rivalGroup = [];
+				$("#waiting-list").children("li").each(function(index, elem) {
+					elem.classList.remove("waiting-btn");
+					$(elem).off();
+					if (elem.classList.contains("waiting-btn-on")) {
+						elem.classList.remove("waiting-btn-on");
 						//Create Rivals with this element
-						
+						rivalGroup.push(elem);
 						
 					}
 				});
+				if (rivalGroup.length > 1 && RivalGroups.length < 1) {
+                    var groupIndex = RivalGroups.push(rivalGroup) - 1;
+                    rivalGroup.forEach(function(elem, playerIndex) {
+                        var icon = $(elem).find(".rival-icon");
+                        icon.show();
+                        icon.addClass("rival-icon" + groupIndex);
+                    });
+                }
 			}
 		}
 		
@@ -888,7 +953,20 @@ height}
 			
 			var node = document.createElement("LI");
 			node.style.position = "relative";
-			var textnode = document.createTextNode(player.name);
+			var header = document.createElement("H2");
+            header.className = 'waiting-name';
+            {
+            	var textnode = document.createTextNode(player.name);
+            	header.appendChild(textnode);
+            }
+			var allyIMG = document.createElement("IMG");
+			allyIMG.className = 'profile-icon ally-icon';
+			allyIMG.src = "images/ally2.png";
+			allyIMG.style.display = "none";
+			var rivalIMG = document.createElement("IMG");
+			rivalIMG.className = 'profile-icon rival-icon';
+			rivalIMG.src = "images/rival.png";
+			rivalIMG.style.display = "none";
 			var span = document.createElement("SPAN");
 			span.className = 'close';
 			span.title='Remove Card'
@@ -918,7 +996,9 @@ height}
 			}
 			
 			node.appendChild(image);
-			node.appendChild(textnode);
+			node.appendChild(header);
+			node.appendChild(allyIMG);
+			node.appendChild(rivalIMG);
 			node.appendChild(span);
 			document.getElementById("waiting-list").appendChild(node);
 		}
@@ -1079,8 +1159,8 @@ ADV
 		
 		function passNameToAPI() {
 			var summnerName = $("#name-box").val();
-			reportSummonerFetching();
 			console.log("Calling passNameToAPI");
+			reportSummonerFetching();
 			return apiSummoner(summnerName, false);
 		}
 
@@ -1109,9 +1189,11 @@ ADV
 			const proxyurl = "https://cors-anywhere.herokuapp.com/";
 			const url = encodeURI("https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/" + summnerName + "?api_key=");
 			console.log("fetching id for " + summnerName)
+			var gotJSON = false;
 			$.getJSON(proxyurl + url + apikey, 
 			function(data) {
 				//data is the JSON string
+				gotJSON = true;
 				var summID = data.id;
 				console.log("summonerID: " + summID);
 				var actualName = data.name;
@@ -1141,6 +1223,7 @@ ADV
 							if (addToActive) {
 								addToActivePlayers(actualName);
 							}
+							return true;
 						}
 					});
 					if (!ranked) {
@@ -1155,9 +1238,11 @@ ADV
 						if (addToActive) {
                         	addToActivePlayers(actualName);
                         }
+						return true;
 					}
 				});
-			});
+			})
+			.error(function() { reportSummonerNotExist(); });
 			return false;
 		}
 
@@ -1167,6 +1252,14 @@ ADV
 			element.empty();
 			element.removeClass("success-text error-text");
 			element.append(text);
+		}
+
+		function reportSummonerNotExist() {
+			var element = $("#feedback");
+            var text = document.createTextNode("That Summoner does not exist");
+            element.empty();
+            element.removeClass("success-text error-text");
+            element.append(text);
 		}
 
 		function reportSummonerNotAdded(msg) {
