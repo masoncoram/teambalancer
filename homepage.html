@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 
+
 <!--API KEY: RGAPI-ee9841e3-437d-429a-96bf-b962e011b31a -->
 <!-- https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/US%20Economy?api_key=RGAPI-0690f2d7-d1ea-4258-8dfe-74c442446b4e -->
 <!-- https://na1.api.riotgames.com/lol/league/v4/positions/by-summoner/100311?api_key=RGAPI-0690f2d7-d1ea-4258-8dfe-74c442446b4e -->
@@ -7,11 +8,13 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8"/>
+
+	<!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-	<!-- Bootstrap -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<!-- icon library -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<style>
@@ -285,6 +288,10 @@ body {
 	max-width: 22vw;
 }
 
+.friend-card {
+	z-index: 2;
+}
+
 .friend-card span {
 	right: 10px;
 }
@@ -358,6 +365,10 @@ input[type=text] {
 
 #friends ul li.down {
 	background: #009cb7;
+}
+#friends ul li.down h4,
+#friends ul li.down p {
+	color: #eee;
 }
 
 #friends ul li.up:hover {
@@ -561,7 +572,6 @@ height}
 
 	</style>
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
 	</script>
 	<script>
 
@@ -785,7 +795,8 @@ height}
 					return false;
 				});
 			}
-
+			
+			console.log("length " + toShow.length);
 			if (toShow.length == 0) {
 				showAddCard();
 			} else {
@@ -877,6 +888,16 @@ height}
 
 			configure_balance_button();
 			display_friends(friends);
+
+			//if ($('[data-toggle="tooltip"]').length == 0 ) {
+			//	console.log("no tooltips");
+			//}
+			//else {
+			//	console.log($('[data-toggle="tooltip"]'));
+			//}
+			$('[data-toggle="tooltip"]').tooltip();
+			$("#ally-btn").tooltip();
+			$("#rival-btn").tooltip();
 
 			var modal = document.getElementById('modal-wrapper');
         	window.onclick = function(event) {
@@ -1084,6 +1105,9 @@ height}
 							//console.log("removing " + name + " from list at index " + index);
 							removePlayer(name);
 							document.getElementById("friends-list").removeChild(item);
+							if ($("#friends-list").children().length == 0) {
+								display_friends();
+							}
 						}
 						if (span.addEventListener) {
 							span.addEventListener("click", removeFunc);
@@ -1127,6 +1151,51 @@ height}
 		}
 		function showAddCard() {
 			console.log("addCard");
+
+			var item = document.createElement("LI");             // Create a <li> item
+            item.className = 'up';
+
+            {
+                var card = document.createElement("DIV");             // Create a dev
+                card.className = 'flex-container friend-card'
+                {
+                    var body = document.createElement("DIV");
+                    body.className = 'card-body';
+                    {
+                        var title = document.createElement("H4");
+                        title.className = 'card-title unselectable';
+                        {
+                            var textnode = document.createTextNode("Add a friend");
+                            textnode.className = 'unselectable';
+                            title.appendChild(textnode);
+                        }
+                        body.appendChild(title)
+                    }
+
+                    var image = document.createElement("IMG");
+                    image.className = 'card-img-right';
+                    image.src = "images/arrow.png";
+
+					card.appendChild(body);
+                    card.appendChild(image);
+                    {
+                        function cardFunc(e) {
+							showPopup();
+                        }
+
+                        if (card.addEventListener) {
+                            card.addEventListener("click", cardFunc);
+                        } else if (card.attachEvent) {
+                            card.attachEvent("click", cardFunc);
+                        } else {
+                            console.log("card event not added");
+                        }
+                    }
+
+                }
+                item.appendChild(card);
+            }
+            $("#friends-list").append(item); 
 		}
 		
 		/*
@@ -1194,7 +1263,8 @@ ADV
 			var summnerName = $("#name-box").val();
 			console.log("Calling passNameToAPI");
 			reportSummonerFetching();
-			return apiSummoner(summnerName, false);
+			apiSummoner(summnerName, false);
+			return false;
 		}
 
 		function apiSummoner(summnerName, addToActive) {
@@ -1319,10 +1389,12 @@ ADV
 			var btn = $("#balance_btn");
 			btn.click(showBalanceGrid);
 			btn.html("Balance!");
+			btn.css("font-size", "30px");
 			btn.prop("disabled",true);
 
 			btn = $("#back_btn");
 			btn.click(showPlayerList);
+			btn.css("font-size", "30px");
 			btn.html("Back");
 			btn.hide();
 		}
@@ -1339,11 +1411,12 @@ ADV
 				var card = document.createElement("DEV");			  // Create a dev
 				card.className = 'flex-container balance-card';
 				{
-					var body = document.createElement("DEV");
+					var body = document.createElement("GARY");
 					body.className = 'card-body';
 					{
 						var title = document.createElement("P");
 						title.className = 'card-title unselectable';
+						title.style.color = "#eee";
 						{
 							var textnode = document.createTextNode(player.name);
 							title.appendChild(textnode);
@@ -1594,7 +1667,7 @@ ADV
 				<div id="Individual" class="tabcontent">
 					<!-- <img src="images/add_friend-512.png" alt="Avatar" class="avatar"> -->
 					<h3 style="text-align:center"> Type Summoner name: </h3>
-					<form action="" id="individualSearch" onSubmit="return passNameToAPI()">
+					<form action="javascript:void(0);" id="individualSearch" onSubmit="passNameToAPI(); return false;">
 						<input id="name-box" type="text" size="30" placeholder="Summoner Name..." class="text-in"/>
 						<br/>
 						<button onclick="passNameToAPI()" type="button" class="btn summoner-btn"><font size="6">Add Summoner</font></button>
@@ -1622,8 +1695,8 @@ ADV
 					<p> Selected players: <span id="num_players">0/10</span></p>
 					<ul id="waiting-list"></ul>
 				</div>
-				<input type="image" src="images/ally.png" class="icon-btn" id="ally-btn" onclick="allyOnClick()" />
-				<input type="image" src="images/rival.png" class="icon-btn" id="rival-btn" onclick="rivalOnClick()" />
+				<input type="image" src="images/ally.png" class="icon-btn" id="ally-btn" onclick="allyOnClick()" data-toggle="tooltip" data-placement="bottom" title="Create Allies" />
+				<input type="image" src="images/rival.png" class="icon-btn" id="rival-btn" onclick="rivalOnClick()" data-toggle="tooltip" data-placement="bottom" title="Create Rivalry" />
 
 				<div id="balanced" class="balance">
 					<div class="flex-container">
@@ -1640,8 +1713,8 @@ ADV
 					</div>
 				</div>
 				<div style="text-align:center; margin-right:0vw;">
-            		<button id="balance_btn" type="button" class="btn btn-success" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
-            		<button id="back_btn" type="button" class="btn" style="margin-left: 2vw;">NO_JAVASCRIPT</button>
+            		<button id="balance_btn" type="button" class="btn btn-success" style="margin-left: 2vw;"><font size="6">NO_JAVASCRIPT</font></button>
+            		<button id="back_btn" type="button" class="btn" style="margin-left: 2vw;"><font size="6">NO_JAVASCRIPT</font></button>
 				</div>
 
 		</div>
@@ -1662,6 +1735,7 @@ ADV
                 onclick="showPopup()">
 		</div>
 		<ul id="friends-list">
+			<p style="color:#eee;">Add a friend ^</p>
 			<li>
 				<div class="flex-container friend-card"> <!--style="width: 18rem;"-->
 					<div class="card-body">
